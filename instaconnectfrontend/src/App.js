@@ -7,6 +7,8 @@ import AdminLogin from './pages/AdminLogin';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { checkAuth } from './redux/slice'
+import HomePage from './pages/HomePage';
+import ProfilePage from './pages/ProfilePage';
 
 
 function App() {
@@ -17,15 +19,15 @@ function App() {
     dispatch(checkAuth())
   },[dispatch])
   return (
-    <div className='App'>
       <Router>
         <Routes>
           <Route path='/' element={<LoginPage/>}/>
           <Route path='/admin-login' element={<AdminLogin/>}/>
           <Route path='/register' element={<RegisterPage/>}/>
+          <Route path='/home' element={<HomePage/>}/>
+          <Route path='/profile/:email' element={<ProfilePage />}/>
         </Routes>
       </Router>
-    </div>
   );
 }
 

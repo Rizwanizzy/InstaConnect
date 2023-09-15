@@ -48,6 +48,7 @@ export const getUser = createAsyncThunk(
             })
             const data = await response.json()
             if (response.status === 200){
+                console.log('redux store data:',data)
                 return data
             } else{
                 return thunkAPI.rejectWithValue(data)
