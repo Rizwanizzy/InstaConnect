@@ -39,7 +39,7 @@ export const getUser = createAsyncThunk(
     async(_,thunkAPI) =>{
         const access_token = localStorage.getItem('access_token')
         try{
-            const response = await fetch(`${BASE_URL}/users/me`,{
+            const response = await fetch(`${BASE_URL}/users/me/`,{
                 method:'GET',
                 headers:{
                     Accept:'application/json',
@@ -48,7 +48,6 @@ export const getUser = createAsyncThunk(
             })
             const data = await response.json()
             if (response.status === 200){
-                console.log('redux store data:',data)
                 return data
             } else{
                 return thunkAPI.rejectWithValue(data)
@@ -143,7 +142,7 @@ export const updateToken = createAsyncThunk(
                 method:'POST',
                 headers:{
                     Accept:'application/json',
-                    'Content-Type':'application/json'
+                    'Content-Type':'application/json',
                 },
                 body,
             })
@@ -200,7 +199,7 @@ const userSlice = createSlice({
             state.loading = true
         })
         .addCase(login.fulfilled, (state,action) =>{
-            state.loading = false;
+            // state.loading = false;
             state.isAuthenticated = true;
             state.isSuperuser = jwt_decode(action.payload.access).is_superuser;
         })

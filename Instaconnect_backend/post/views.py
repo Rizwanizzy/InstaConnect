@@ -33,6 +33,49 @@ class PostHomeView(APIView):
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
         
+
+#=========================================POST SECTION===================================
+
+class CreatePostView(APIView):
+    permission_classes= [permissions.IsAuthenticated]
+    serializer_class = PostSerializer
+
+    def post(self,request,*args,**kwargs):
+        try:
+            user = request.user
+            img = request.data['img']
+            body = request.data['body']
+            serializer = self.serializer_class(data=request.data)
+            if serializer.is_valid():
+                serializer.save(author=user,img=img,body=body)
+                return Response(status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors,status=status.HTTP_406_NOT_ACCEPTABLE)
+        except Exception as e:
+            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+class UpdatePostView(APIView):
+    permission_classes=[permissions.IsAuthenticated]
+    serializer_class = PostSerializer
+
+    def post(self,request,pk):
+        try:
+            user = request.user
+            post_object = Posts.objects.get(id=pk)
+            serializer =self.serializer_class(post_object,data=request.data,partial = True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors)
+        except Posts.DoesNotExist:
+            return Response('No such post found.')
+
+
+
+
+
+
 #=====================================USER PROFILE=====================================
 
 class ProfileView(APIView):

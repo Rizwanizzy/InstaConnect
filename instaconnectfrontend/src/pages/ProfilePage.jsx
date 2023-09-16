@@ -6,16 +6,26 @@ import { useSelector } from 'react-redux';
 import { Navigate, useParams } from 'react-router-dom';
 import userProfileApi from '../api/userProfileApi';
 import { BASE_URL } from '../utils/constants';
+import ProfileUpdateModal from '../components/ProfileUpdateModal';
 
 const UserPage = styled.div`
   display: flex;
   height: 100vh;
-  padding-right:10rem;
 `;
 
 const NavContainer = styled.div`
-  width: 250px;
+  width: 16.5%;
   background-color: #f0f0f0;
+  top:0;
+  bottom:0;
+  position:fixed;
+`;
+
+const ProfileContentWrapper = styled.div`
+  width:100%;
+  display: flex;
+  flex-direction: column; /* Display children in a column */
+  padding-left: 16.5%
 `;
 
 const ProfileContainer = styled.div`
@@ -63,13 +73,13 @@ const ProfilePhoto = styled.div`
 
 const ProfileInfo = styled.div`
 .name {
-  font-size: 1.2em;
+  font-size: 1.5em;
   color: #545454;
   margin-bottom: 0;
+  font-weight: 600
 }
 
 .about {
-  margin-top: 1rem;
   font-size: 1em;
   color: #545454;
 }
@@ -87,12 +97,17 @@ button {
 }
 
 .stats {
-  margin-left:-17px;
+  margin-left: -17px;
 }
 
 .profile-content {
   margin-left: 1rem; /* Adjust the margin as needed */
 }
+`;
+
+const CustomText = styled.span`
+  font-weight: bold;
+  font-size: 18px; 
 `;
 
 const UserName = styled.div`
@@ -106,6 +121,41 @@ const EditButton = styled.button`
   cursor: pointer;
 `;
 
+const ImagesContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: baseline;
+  justify-items: center;
+`;
+
+const ImagesWrapper = styled.div`
+  margin-top: 2em; /* Adjust the margin as needed to create space between the profile and images */
+`;
+
+const ImageWrapper = styled.div`
+  width: 100%;
+  max-width: 200px;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  margin-bottom: 30px; /* Increase margin-bottom to create space between images in the same column */
+  margin-left: 0px; /* Decrease margin-left to reduce space between images in the same row */
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  img:hover {
+    opacity: 0.7;
+  }
+`;
 
 const ProfilePage = () => {
 
@@ -146,55 +196,80 @@ const ProfilePage = () => {
     return <Navigate to='/' />
   }
 
+  const handleViewPost = (postId) =>{
+    setPostId(postId)
+    setShowPostDetailModal(true)
+  }
+
 
   return (
     <UserPage>
       <NavContainer>
         <NavBar />
       </NavContainer>
-      <ProfileContainer>
-        <ProfileInput type="file" accept="image/*" name="photo" id="profilePhotoInput" />
-        <label htmlFor="profilePhotoInput">
-          <ProfilePhoto role='button' title='Click to edit photo'>
-            <img src={`${BASE_URL}${profile?.display_pic}`} alt="profile" />
-            {profile?.email === user?.email ?(
-              <span onClick={() => setShowProfileModal(true)}>Edit</span>
-            ):''}
-          </ProfilePhoto>
-        </label>
-        <ProfileInfo>
-          <div className="profile-content"> {/* Wrap the entire content */}
-            <UserName>
-              <p className="name">{profile?.username?? ""}</p>
-            </UserName>
-            <div className="stats">
-              <div className="flex">
-                <div className="mr-4 p-3 text-center">
-                  <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-600">
-                  </span>
-                  <span className="text-sm text-blueGray-400">0  Followers</span>
-                </div>
-                <div className="mr-4 p-3 text-center">
-                  <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-600">
+      <ProfileContentWrapper>
+        <ProfileContainer>
+          <ProfileUpdateModal isVisible={showProfileModal} onClose={() =>setShowProfileModal(false)} />
+          <label htmlFor="profilePhotoInput">
+            <ProfilePhoto role='button' onClick={() =>setShowProfileModal(true)} title='Click to edit photo'>
+              <img src={`${BASE_URL}${profile?.display_pic}`} alt="profile" />
+            </ProfilePhoto>
+          </label>
+          <ProfileInfo>
+            <div className="profile-content">
+              <UserName>
+                <p className="name">{profile?.username?? ""}</p>
+              </UserName>
+              <div className="stats">
+                <div className="flex">
+                  <div className="mr-4 p-3 text-center">
+                    <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-900">
+                    </span>
+                    <CustomText style={{ fontWeight: 'bold' }} className="text-sm text-blueGray-400">0  Followers</CustomText>
+                  </div>
+                  <div className="mr-4 p-3 text-center">
+                    <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-900">
 
-                  </span>
-                  <span className="text-sm text-blueGray-400">0  Following</span>
-                </div>
-                <div className="lg:mr-4 p-3 text-center">
-                  <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-600">
+                    </span>
+                    <CustomText style={{ fontWeight: 'bold' }} className="text-sm text-blueGray-400">0  Following</CustomText>
+                  </div>
+                  <div className="lg:mr-4 p-3 text-center">
+                    <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-900">
 
-                  </span>
-                  <span className="text-sm text-blueGray-400">0  Posts</span>
+                    </span>
+                    <CustomText style={{ fontWeight: 'bold' }} className="text-sm text-blueGray-400">0  Posts</CustomText>
+                  </div>
                 </div>
               </div>
+              <p className="about">{profile?.first_name?? ""}  {profile?.last_name ?? ""} </p>
+              <p className="about">{profile?.email?? ""}</p>
             </div>
-            <p className="about">Full Name</p>
-            <p className="about">User About</p>
-          </div>
-        </ProfileInfo>
+          </ProfileInfo>
+        </ProfileContainer>
 
 
-      </ProfileContainer>
+        {/* <div className="mt-10 py-10 border-t border-blueGray-200 text-center"> */}
+        <ImagesWrapper> {/* Wrap the ImagesContainer */}
+          <ImagesContainer>
+            {posts ? (
+              posts.map((post) => (
+                <ImageWrapper
+                  key={post.id}
+                  onClick={() => handleViewPost(post.id)}
+                >
+                  <img
+                    src={`${BASE_URL}${post.img}`}
+                    alt="post"
+                  />
+                </ImageWrapper>
+              ))
+            ) : (
+              <p>No posts available.</p>
+            )}
+          </ImagesContainer>
+        </ImagesWrapper> {/* End of ImagesContainer */}
+      </ProfileContentWrapper>
+        {/* </div> */}
     </UserPage>
   );
 }

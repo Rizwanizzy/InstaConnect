@@ -14,6 +14,7 @@ import profileIcon from '../images/Default-Profile-Picture1.png'
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../redux/slice';
+import PostModal from './PostModal';
 
 const NavBarWrapper = styled.nav`
   position: fixed;
@@ -91,6 +92,8 @@ const LogoutButton = styled.button`
   border-radius: 15px;
   width: 100%;
   text-decoration: none;
+  position: fixed;
+  bottom: 3px;
 
   &:hover {
     cursor: pointer;
@@ -137,6 +140,14 @@ const NavBar = () => {
     const handleLogout = () =>{
         dispatch(logout())
     }
+
+    const createPost = () =>{
+      if (show === true ) {
+        setShow(false)
+      } else {
+        setShow(true)
+      }
+    }
   return (
     <NavBarWrapper>
       <Logo>Instaconnect</Logo>
@@ -161,7 +172,7 @@ const NavBar = () => {
           <FavoriteIcon />
           <span>Notification</span>
         </NavButton>
-        <NavButton to="#">
+        <NavButton onClick={createPost}>
           <AddCircleIcon />
           <span>Create</span>
         </NavButton>
@@ -175,12 +186,12 @@ const NavBar = () => {
           <LogoutIcon />
           <span>Logout</span>
         </LogoutButton>
-        <MoreButton to="#">
+        {/* <MoreButton to="#">
             <MenuIcon />
             <span>More</span>
-        </MoreButton>
+        </MoreButton> */}
       </ButtonContainer>
-        
+      <PostModal isVisible={show} onClose={() => setShow(false)} />
     </NavBarWrapper>
     
   )

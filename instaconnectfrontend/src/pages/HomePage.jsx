@@ -10,7 +10,7 @@ const PageContainer = styled.div`
 `;
 
 const NavContainer = styled.div`
-  width: 250px;
+  width: 16.5%;
   background-color: #f0f0f0;
 `;
 
