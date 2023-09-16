@@ -108,13 +108,13 @@ const RegisterPage = () => {
                   required
                 />
               </div>
-              <button type="submit" className="btn btn-secondary" style={buttonStyle}>
+              <button type="submit" className="btn btn-secondary " style={buttonStyle}>
                 Sign up
               </button>
             </form>
             <div className="mt-4">
               Already have an account?
-              <Link to="/" style={{ textDecoration: 'none', color: '#0095F6' }}>
+              <Link to="/" className='font-semibold leading-6 ml-2 text-indigo-600 hover:text-indigo-500 text-decoration-none'>
                 {' '}
                 Login
               </Link>

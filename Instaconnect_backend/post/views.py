@@ -72,6 +72,18 @@ class UpdatePostView(APIView):
             return Response('No such post found.')
 
 
+#=====================================FETCH POST DETAILS===============================
+
+class PostDetail(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self,request,pk):
+        try:
+            post = Posts.objects.get(id=pk)
+            serializer = PostSerializer(post)
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 

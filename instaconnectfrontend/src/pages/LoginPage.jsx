@@ -92,7 +92,7 @@ const LoginPage = () => {
                     <button type="submit" className="btn btn-secondary" style={buttonStyle}>Log In</button>
                 </form>
                 <p className="mt-3 text-center text-sm text-gray-500">Don't have an account? <Link to={'/register'} className="font-semibold leading-6 ml-2 text-indigo-600 hover:text-indigo-500 text-decoration-none">Sign up</Link></p>
-                <p className="mt-1">Are you Superuser? <Link to={"/admin-login"} className="text-decoration-none">Login Here</Link></p>
+                <p className="mt-1">Are you Superuser? <Link to={"/admin-login"} className="font-semibold leading-6 ml-2 text-indigo-600 hover:text-indigo-500 text-decoration-none">Login Here</Link></p>
                 <div className="mt-4">
                     <p>Get the app.</p>
                     <img src={appStores} alt="Get the app" className="img-fluid" style={{ width: '300px' }} />

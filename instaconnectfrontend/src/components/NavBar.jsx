@@ -15,6 +15,7 @@ import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../redux/slice';
 import PostModal from './PostModal';
+import { BASE_URL } from '../utils/constants';
 
 const NavBarWrapper = styled.nav`
   position: fixed;
@@ -24,10 +25,17 @@ const NavBarWrapper = styled.nav`
   z-index: 1;
 `;
 
-const Logo = styled.span`
+const Logo = styled(Link)`
   font-family: "Style Script";
+  color:black;
   font-size: 33px;
   margin: 25px;
+  text-decoration:none;
+
+  &:hover {
+    cursor: pointer;
+    text-decoration: none !important;
+  }
 `;
 
 const ButtonContainer = styled.div`
@@ -67,10 +75,13 @@ const AvatarContainer = styled(Link)`
   text-decoration: none;
   margin: 5px 15px 5px 15px;
   padding: 10px 15px 10px 10px;
+  border-radius: 15px;
+  width: 100%;
   color: rgb(0, 0, 0);
 
-  img {
-    width: 100%;
+  &:hover {
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.128);
   }
 
   &:hover {
@@ -90,7 +101,7 @@ const LogoutButton = styled.button`
   margin: 5px 15px 5px 15px;
   padding: 10px 15px 10px 15px;
   border-radius: 15px;
-  width: 100%;
+  width: 11%;
   text-decoration: none;
   position: fixed;
   bottom: 3px;
@@ -107,27 +118,6 @@ const LogoutButton = styled.button`
   }
 `;
 
-const MoreButton = styled(Link)`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  color: rgb(0, 0, 0);
-  background: 0;
-  border: 0;
-  margin: 5px 15px 5px 15px;
-  padding: 10px 15px 10px 15px;
-  border-radius: 15px;
-  width: 100%;
-  position: fixed;
-  bottom: 3px;
-  text-decoration: none;
-
-  &:hover {
-    cursor: pointer;
-    background-color: rgba(255, 255, 255, 0.128);
-    text-decoration: none;
-  }
-`;
 
 // import Create from './navigateTo/Create';
 const NavBar = () => {
@@ -150,7 +140,7 @@ const NavBar = () => {
     }
   return (
     <NavBarWrapper>
-      <Logo>Instaconnect</Logo>
+      <Logo to='/'>Instaconnect</Logo>
       <ButtonContainer>
         <NavButton to="/">
           <HomeIcon />
@@ -178,7 +168,7 @@ const NavBar = () => {
         </NavButton>
         <AvatarContainer to={`/profile/${email}`}>
           <Avatar className="avatar">
-            <img src={profileIcon} alt="" />
+            <img src={`${BASE_URL}${user?.display_pic}`} alt="" />
           </Avatar>
           <span>Profile</span>
         </AvatarContainer>

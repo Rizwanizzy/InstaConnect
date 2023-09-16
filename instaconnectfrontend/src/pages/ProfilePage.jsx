@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import NavBar from '../components/NavBar';
 import styled from 'styled-components';
-import DefaultPicture from '../images/default_picture.png';
 import { useSelector } from 'react-redux';
 import { Navigate, useParams } from 'react-router-dom';
 import userProfileApi from '../api/userProfileApi';
 import { BASE_URL } from '../utils/constants';
 import ProfileUpdateModal from '../components/ProfileUpdateModal';
+import PostDetailModal from '../components/PostDetailModal';
 
 const UserPage = styled.div`
   display: flex;
@@ -15,7 +15,7 @@ const UserPage = styled.div`
 
 const NavContainer = styled.div`
   width: 16.5%;
-  background-color: #f0f0f0;
+  background-color:#f0f0f0;
   top:0;
   bottom:0;
   position:fixed;
@@ -25,7 +25,7 @@ const ProfileContentWrapper = styled.div`
   width:100%;
   display: flex;
   flex-direction: column; /* Display children in a column */
-  padding-left: 16.5%
+  padding-left: 16.5%;
 `;
 
 const ProfileContainer = styled.div`
@@ -37,10 +37,6 @@ const ProfileContainer = styled.div`
   padding: 0em 0em 2em 5em;
   margin-top: 4em;
   margin-bottom: 2em;
-`;
-
-const ProfileInput = styled.input`
-  display: none;
 `;
 
 const ProfilePhoto = styled.div`
@@ -115,11 +111,6 @@ const UserName = styled.div`
   align-items: center;
 `;
 
-const EditButton = styled.button`
-  margin-top: 23px;
-  margin-left: 10px;
-  cursor: pointer;
-`;
 
 const ImagesContainer = styled.div`
   display: grid;
@@ -210,6 +201,7 @@ const ProfilePage = () => {
       <ProfileContentWrapper>
         <ProfileContainer>
           <ProfileUpdateModal isVisible={showProfileModal} onClose={() =>setShowProfileModal(false)} />
+          <PostDetailModal isVisible={showPostDetailModal} onClose={() =>setShowPostDetailModal(false)} postID={postId}/>
           <label htmlFor="profilePhotoInput">
             <ProfilePhoto role='button' onClick={() =>setShowProfileModal(true)} title='Click to edit photo'>
               <img src={`${BASE_URL}${profile?.display_pic}`} alt="profile" />
@@ -225,19 +217,19 @@ const ProfilePage = () => {
                   <div className="mr-4 p-3 text-center">
                     <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-900">
                     </span>
-                    <CustomText style={{ fontWeight: 'bold' }} className="text-sm text-blueGray-400">0  Followers</CustomText>
+                    <CustomText style={{ fontWeight: 'bold' }} className="text-sm text-blueGray-400">{profile?.follower_count ?? "0"}  Followers</CustomText>
                   </div>
                   <div className="mr-4 p-3 text-center">
                     <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-900">
 
                     </span>
-                    <CustomText style={{ fontWeight: 'bold' }} className="text-sm text-blueGray-400">0  Following</CustomText>
+                    <CustomText style={{ fontWeight: 'bold' }} className="text-sm text-blueGray-400">{profile?.following_count ?? "0"}  Following</CustomText>
                   </div>
                   <div className="lg:mr-4 p-3 text-center">
                     <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-900">
 
                     </span>
-                    <CustomText style={{ fontWeight: 'bold' }} className="text-sm text-blueGray-400">0  Posts</CustomText>
+                    <CustomText style={{ fontWeight: 'bold' }} className="text-sm text-blueGray-400">{profile?.total_posts ?? "0"}  Posts</CustomText>
                   </div>
                 </div>
               </div>
@@ -268,8 +260,8 @@ const ProfilePage = () => {
             )}
           </ImagesContainer>
         </ImagesWrapper> {/* End of ImagesContainer */}
+        
       </ProfileContentWrapper>
-        {/* </div> */}
     </UserPage>
   );
 }
