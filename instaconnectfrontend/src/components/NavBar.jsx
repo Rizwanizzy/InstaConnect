@@ -6,11 +6,9 @@ import ExploreIcon from '@mui/icons-material/Explore';
 import ChatIcon from '@mui/icons-material/Chat';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Link } from 'react-router-dom';
 import { Avatar } from '@mui/material'
-import profileIcon from '../images/Default-Profile-Picture1.png'
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../redux/slice';
@@ -50,7 +48,7 @@ const NavButton = styled(Link)`
   color: rgb(0, 0, 0);
   background: 0;
   border: 0;
-  margin: 5px 15px 5px 15px;
+  margin: 10px 15px 10px 15px;
   padding: 10px 15px 10px 15px;
   border-radius: 15px;
   width: 100%;
@@ -58,12 +56,12 @@ const NavButton = styled(Link)`
 
   &:hover {
     cursor: pointer;
-    background-color: rgba(255, 255, 255, 0.128);
+    background-color: #C3C2C2;
   }
 
   &:hover {
     cursor: pointer;
-    background-color: rgba(255, 255, 255, 0.128);
+    background-color: #C3C2C2;
     text-decoration: none !important; /* Add !important to increase specificity */
   }
 `;
@@ -73,7 +71,7 @@ const AvatarContainer = styled(Link)`
   flex-direction: row;
   align-items: center;
   text-decoration: none;
-  margin: 5px 15px 5px 15px;
+  margin: 10px 15px 10px 15px;
   padding: 10px 15px 10px 10px;
   border-radius: 15px;
   width: 100%;
@@ -81,12 +79,12 @@ const AvatarContainer = styled(Link)`
 
   &:hover {
     cursor: pointer;
-    background-color: rgba(255, 255, 255, 0.128);
+    background-color: #C3C2C2;
   }
 
   &:hover {
     cursor: pointer;
-    background-color: rgba(255, 255, 255, 0.128);
+    background-color: #C3C2C2;
     text-decoration: none !important; /* Add !important to increase specificity */
   }
 `
@@ -101,20 +99,20 @@ const LogoutButton = styled.button`
   margin: 5px 15px 5px 15px;
   padding: 10px 15px 10px 15px;
   border-radius: 15px;
-  width: 11%;
   text-decoration: none;
   position: fixed;
   bottom: 3px;
 
   &:hover {
     cursor: pointer;
-    background-color: rgba(255, 255, 255, 0.128);
+    background-color: #C3C2C2;
   }
 
   &:hover {
     cursor: pointer;
-    background-color: rgba(255, 255, 255, 0.128);
-    text-decoration: none !important; /* Add !important to increase specificity */
+    background-color: #C3C2C2;
+    text-decoration: none !important;
+    width: 11%;
   }
 `;
 
@@ -176,10 +174,6 @@ const NavBar = () => {
           <LogoutIcon />
           <span>Logout</span>
         </LogoutButton>
-        {/* <MoreButton to="#">
-            <MenuIcon />
-            <span>More</span>
-        </MoreButton> */}
       </ButtonContainer>
       <PostModal isVisible={show} onClose={() => setShow(false)} />
     </NavBarWrapper>

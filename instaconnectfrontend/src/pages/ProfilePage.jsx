@@ -162,7 +162,6 @@ const ProfilePage = () => {
   const email = param.email
 
   useEffect(() =>{
-
     const fetchData = async () =>{
       try {
         setIsLoading(true)

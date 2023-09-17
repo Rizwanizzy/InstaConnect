@@ -78,3 +78,17 @@ class UpdateUserView(APIView):
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except UserAccount.DoesNotExist:
             return Response('User not found in the database',status=status.HTTP_404_NOT_FOUND)
+        
+
+#=====================================ADMIN SIDE FUNCTIONS==============================================
+
+class UsersList(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self,request):
+        try:
+            user = UserAccount.objects.filter(is_admin = False)
+            serializer = UserSerializer(user , many =True)
+            return Response(serializer.data , status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)

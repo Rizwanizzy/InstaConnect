@@ -9,6 +9,8 @@ import { useEffect } from 'react';
 import { checkAuth } from './redux/slice'
 import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
+import AdminDashboard from './pages/AdminDashboard';
+import UsersList from './pages/UsersList';
 
 
 function App() {
@@ -27,6 +29,9 @@ function App() {
           <Route path='/register' element={<RegisterPage/>}/>
           <Route path='/home' element={<HomePage/>}/>
           <Route path='/profile/:email' element={<ProfilePage />}/>
+
+          <Route path='/admin-dashboard' element={<AdminDashboard />} />
+          <Route path='/users' element={<UsersList />} />
         </Routes>
       </Router>
   );
