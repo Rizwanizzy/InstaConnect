@@ -6,6 +6,7 @@ import AdminNavBar from '../components/AdminNavBar'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import {MDBTable, MDBTableHead, MDBTableBody } from 'mdb-react-ui-kit';
+import DefaultPicture from '../images/default_picture.png'
 
 
 export const Body = styled.div`
@@ -157,7 +158,7 @@ const UsersList = () => {
                             <td>
                                 <div className='d-flex align-items-center'>
                                 <img
-                                    src={`${BASE_URL}${item.display_pic}`}
+                                    src={item.display_pic ? `${BASE_URL}${item.display_pic}` : '../images/default_picture.png' }
                                     alt={item.username}
                                     style={{ width: '45px', height: '45px' }}
                                     className='rounded-circle'

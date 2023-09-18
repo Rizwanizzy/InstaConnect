@@ -73,7 +73,7 @@ const PostModal = ({isVisible, onClose , postID , initialCaption,initialImage}) 
 
   return (
     <div
-      className="z-50 fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center"
+      className="z-10 fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center"
       id="wrapper"
       onClick={handleClose}
     >
@@ -89,7 +89,7 @@ const PostModal = ({isVisible, onClose , postID , initialCaption,initialImage}) 
             {postID ? null : (
               <div>
               <label
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-black"
+                className="z-10 block mb-2 text-sm font-medium text-gray-900 dark:text-black"
                 htmlFor="file_input"
               >
                 Upload Image

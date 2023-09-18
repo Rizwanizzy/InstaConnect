@@ -14,6 +14,9 @@ import PostDetailModal from '../components/PostDetailModal';
 import Loading from '../components/Loading'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import likePostApi from '../api/likePostApi';
+import ShareIcon from '@mui/icons-material/Share';
+
 
 
 const PageContainer = styled.div`
@@ -107,9 +110,11 @@ const HomePage = () => {
 
   const toggleLikePost = async (postId) => {
     try {
-      
+      await likePostApi(postId,fetchData)
     } catch (error) {
-      
+      toast.err('Failure , Post not Liked!',{
+        position:'top-center',
+      })
     }
   };
 
@@ -234,6 +239,8 @@ const HomePage = () => {
               onClick={()=>{showPostDetail(post.id)}}>
                 <span className="material-symbols-outlined"><ChatBubbleOutlineIcon /></span>
               </button>
+              <span className="material-symbols-outlined"><ShareIcon /></span>
+
             </div>
             <p>{post.likes_count ?? 0}&nbsp;likes</p>
             <div>

@@ -13,6 +13,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import ShareIcon from '@mui/icons-material/Share';
 import UpdatePostApi from '../api/UpdatePostApi';
+// import './PostDetailModal.css'
 
 
 const PostDetailModal = ({ isVisible, onClose, postID }) => {
@@ -144,16 +145,16 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
 
   return (
     <div
-      className="z-10 fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center"
+      className="z-10 fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center "
       id="wrapper"
       onClick={handleClose}
     >
-      <div className="m-2 w-3/5 flex flex-col">
+      <div className="m-2 w-3/5 flex flex-col bg-white p-2 rounded">
         <button className="text-white text-xl place-self-end" onClick={onClose}>
           x
         </button>
         <div className="bg-white p-2 rounded">
-          <div className="flex content-between shadow-lg">
+          <div className="flex content-between shadow-lg flex-grow">
             <div className="flex flex-wrap content-center justify-center rounded-r-md w-1/2">
               <img
                 className="w-full h-full bg-center bg-no-repeat bg-cover rounded-l-md"
@@ -162,7 +163,7 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
               />
             </div>
 
-            <div className="flex flex-wrap content-between justify-start p-4 rounded-l-md bg-white w-1/2 ">
+            <div className="flex flex-wrap content-between justify-start p-4 rounded-l-md bg-white w-1/2 overflow-y-auto ">
               <div className="w-full">
                 <div className="flex items-center space-x-4 border-b-2  border-gray-100">
                   <div className="flex-shrink-0">
@@ -204,10 +205,11 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
                 </div>
                 <br />
                 <div className="space-x-4 border-b-2  border-gray-100">
-                  <ul className="max-w-md divide-y divide-gray-200 dark:divide-gray-700">
-                    <label htmlFor="input-group-1" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comments</label>
+                  <label htmlFor="input-group-1" className="block mb-2 text-sm font-medium text-gray-500 ">Comments</label>
+
+                  <ul className="max-w-md divide-y divide-gray-200 dark:divide-gray-700  max-h-20 overflow-y-auto">
                     {comments ? comments.map((cmnt)=>(
-                    <li key={cmnt.id} className="pb-3 border-none">
+                    <li key={cmnt.id} className="border-none">
 
                       <div className="flex items-center space-x-4">
                         <div className="flex-shrink-0">
@@ -218,7 +220,7 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
                           />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                          <p className="text-sm pt-3 font-medium text-gray-900 truncate">
                             {cmnt.user.username}
                           </p>
                           <p className="text-sm text-gray-500 truncate dark:text-gray-400">
@@ -227,7 +229,7 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
                         </div>
                         <small className="text-gray-400">{cmnt.created_time} ago</small>
                         {cmnt.user.email === user.email &&(
-                          <span><button onClick={()=>deleteComment(cmnt.id)} className='text-black text-md'>x</button></span>
+                          <span><button onClick={()=>deleteComment(cmnt.id)} className='text-black text-md mr-2'>x</button></span>
                           )}
                       </div>
                     </li>
@@ -237,7 +239,7 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
                   </ul>
                 </div>
                 <br />
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-4 mb-5">
                   <div className="p-0">
                     <div className="flex flex-row gap-4">
                       {post?.likes?.includes(user?.id) ? (
@@ -298,14 +300,14 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
                   </div>
                 </div>
                 
-                <form className="mt-5" onSubmit={postComment}>   
+                <form className="" onSubmit={postComment}>   
                   <label htmlFor="search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                   <div className="relative">
                       <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                       <img className="w-8 h-8 text-gray-500 dark:text-gray-400" aria-hidden="true" src={`${BASE_URL}` + post?.author?.display_pic} alt='user'></img>
                       </div>
-                      <input ref={inputRef} value={comment} onChange={(e)=>setComment(e.target.value)} type="search" id="search" className="block w-full p-4 pl-12 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Your comment here.!" required />
-                      <button type="submit" className="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Post</button>
+                      <input ref={inputRef} value={comment} onChange={(e)=>setComment(e.target.value)} type="search" id="search" className="block w-full pt-4 pb-4 pl-5 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Your comment here.!" required />
+                      <button type="submit" className="text-white absolute right-2.5 bottom-3.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Post</button>
                   </div>
               </form>
               </div>

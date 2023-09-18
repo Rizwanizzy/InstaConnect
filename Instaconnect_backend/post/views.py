@@ -99,7 +99,58 @@ class PostDetail(APIView):
             return Response(serializer.data,status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        
 
+#====================================POST LIKE SECTION=================================
+
+class LikeView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self,request,pk):
+        try:
+            post = Posts.objects.get(pk=pk)
+            if request.user in post.likes.all():
+                post.likes.remove(request.user)
+                return Response('Post unliked ', status=status.HTTP_200_OK)
+            else:
+                post.likes.add(request.user)
+                return Response('Post Liked.',status=status.HTTP_200_OK)
+
+        except Posts.DoesNotExist:
+            return Response('Post not found',status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+#====================================POST COMMENT SECTION===================================
+
+class CreateComment(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = CommentSerializer
+
+    def post(self, request, pk , *args,**kwargs):
+        try:
+            user = request.user
+            body = request.data['body']
+            serializer = self.serializer_class(data=request.data)
+            if serializer.is_valid():
+                serializer.save(user=user,post_id=pk,body=body)
+                return Response(status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors,status=status.HTTP_406_NOT_ACCEPTABLE)
+        except Exception as e:
+            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        
+class DeleteComment(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self,request,pk):
+        try:
+            comment = Comment.objects.get(id=pk,user=request.user)
+            comment.delete()
+            return Response(status=status.HTTP_200_OK)
+        except Comment.DoesNotExist:
+            return Response('No Such comment found',status=status.HTTP_404_NOT_FOUND)
 
 
 
