@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView,TokenVerifyView
 
-from .views import getRoutes,RetrieveUserView,RegisterUser,UpdateUserView,UsersList
+from .views import getRoutes,RetrieveUserView,RegisterUser,UpdateUserView,UsersList,BlockUser
 
 
 urlpatterns = [
@@ -15,5 +15,6 @@ urlpatterns = [
     path('user-update/',UpdateUserView.as_view(),name='register'),
     
     path('userslist/',UsersList.as_view(),name='userslist'),
+    path('blockuser/<str:id>',BlockUser.as_view(),name='userslist'),
 ]
 

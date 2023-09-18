@@ -92,3 +92,20 @@ class UsersList(APIView):
             return Response(serializer.data , status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        
+class BlockUser(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self,request,id):
+        try:
+            user = UserAccount.objects.get(id=id)
+            if user.is_active:
+                user.is_active=False
+            else:
+                user.is_active=True
+            user.save()
+            return Response(status=status.HTTP_200_OK)
+        except UserAccount.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response(str(e), status= status.HTTP_500_INTERNAL_SERVER_ERROR)

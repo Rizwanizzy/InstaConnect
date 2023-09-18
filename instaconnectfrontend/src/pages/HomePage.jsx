@@ -44,6 +44,8 @@ const HomePage = () => {
   const [showPostDetailModal,setShowPostDetailModal] = useState(false)
   const [posts,setPosts] = useState([])
   const [postId,setPostId] = useState()
+  const [initialCaption, setInitialCaption] = useState('');
+  const [initialImage, setInitialImage] = useState(null);
   const { loading , isAuthenticated,user } = useSelector(state =>state.user)
 
   useEffect(() =>{
@@ -86,6 +88,12 @@ const HomePage = () => {
 
   const handleUpdatePost = (postId) =>{
     setPostId(postId)
+
+    const postToUpdate = posts.find((post) => post.id === postId)
+    if (postToUpdate) {
+      setInitialCaption(postToUpdate.body)
+      setInitialImage(postToUpdate.img)
+    }
     setShowPostModal(true)
   }
 
@@ -137,7 +145,7 @@ const HomePage = () => {
           <Loading />
         ):(
       <ContentContainer>
-        <PostModal isVisible={showPostModal} onClose={closePostModal} postID={postId} />
+        <PostModal isVisible={showPostModal} onClose={closePostModal} postID={postId} initialCaption={initialCaption} initialImage={initialImage} />
         <PostDetailModal isVisible={showPostDetailModal} onClose={closePostModal} postID={postId} />
         <div className="mt-10">
         {posts ? posts.map((post)=>(

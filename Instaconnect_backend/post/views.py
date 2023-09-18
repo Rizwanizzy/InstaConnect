@@ -53,6 +53,18 @@ class CreatePostView(APIView):
                 return Response(serializer.errors,status=status.HTTP_406_NOT_ACCEPTABLE)
         except Exception as e:
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        
+class DeletePostView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self,request,pk):
+        try:
+            post = Posts.objects.get(id=pk)
+            post.is_deleted=True
+            post.save()
+            return Response(status=status.HTTP_200_OK)
+        except Posts.DoesNotExist:
+            return Response('No post found!',status=status.HTTP_404_NOT_FOUND)
 
 class UpdatePostView(APIView):
     permission_classes=[permissions.IsAuthenticated]
@@ -62,13 +74,16 @@ class UpdatePostView(APIView):
         try:
             user = request.user
             post_object = Posts.objects.get(id=pk)
-            serializer =self.serializer_class(post_object,data=request.data,partial = True)
+            serializer =self.serializer_class(post_object,data={'body':request.data.get('body')},partial = True)
             if serializer.is_valid():
                 serializer.save()
+                print('updated successfully')
                 return Response(status=status.HTTP_200_OK)
             else:
+                print('else condition')
                 return Response(serializer.errors)
         except Posts.DoesNotExist:
+            print('except condition')
             return Response('No such post found.')
 
 

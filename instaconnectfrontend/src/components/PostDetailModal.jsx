@@ -2,21 +2,28 @@ import React,{useEffect,useState,useRef} from 'react'
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
+import DropdownOptions from '../components/DropdownOptions';
 import { BASE_URL } from '../utils/constants';
 import getPostDetailApi from '../api/getPostDetailApi';
+import deletePostApi from '../api/deletePostApi';
 import likePostApi from '../api/likePostApi';
 import createCommentApi from '../api/createCommentApi';
 import deleteCommentApi from '../api/deleteCommentApi';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import ShareIcon from '@mui/icons-material/Share';
+import UpdatePostApi from '../api/UpdatePostApi';
 
 
 const PostDetailModal = ({ isVisible, onClose, postID }) => {
 
     const [post, setPost] = useState(null);
+    const [showPostModal,setShowPostModal] = useState(false)
+    const [postId,setPostId] = useState()
     const [comments, setComments] = useState(null);
     const [comment,setComment] = useState('')
+    const [editingBody, setEditingBody] = useState(false); // Add edit mode state
+    const [updatedBody, setUpdatedBody] = useState(''); // Add updated body state
     const {user} = useSelector(state=>state.user)
     const inputRef = useRef(null);
 
@@ -49,6 +56,56 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
         setComments(data.comments)
       } catch (error) {
         console.error(error);
+      }
+    };
+
+    const handleDeletePost = async (postId) =>{
+      try {
+        await deletePostApi(postId,fetchData)
+        toast.success('Post Deleted Successfully.',{
+          position:'top-center',
+        })
+        onClose()
+      } catch (error) {
+        toast.error('Post Not Deleted.',{
+          position:'top-center',
+        })
+      }
+    }
+  
+    const handleUpdatePost = (postId) =>{
+      setPostId(postId)
+      setShowPostModal(true)
+    }
+
+    const handleEditBody = () =>{
+      setEditingBody(true)
+      setUpdatedBody(post.body)
+    }
+
+    const handleCancelEdit = () =>{
+      setEditingBody(false)
+      setUpdatedBody('')
+    }
+
+    const handleSaveEdit = async () =>{
+      try {
+        await UpdatePostApi(postId,updatedBody)
+        await fetchData()
+        setEditingBody(false)
+      } catch (error){
+        toast.error('Failure , Post not updated',{
+        position:'top-center'
+        })
+        
+      }
+    }
+  
+    const handleReportPost = async (postId) => {
+      try {
+  
+      } catch (err) {
+  
       }
     };
 
@@ -116,10 +173,33 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
                     />
                   </div>
                   <div>
-                    <h1 className="text-xl font-semibold">
-                      {post?.author?.username}
-                    </h1>
-                    <small className="text-gray-400">{post?.body}</small>
+                    {editingBody ? (
+                      <>
+                        <textarea value={updatedBody} onChange={(e) => setUpdatedBody(e.target.value)} className='text-sm text-gray-900 border rounded-lg p-2 w-full ' rows='4' />
+                        <div className="flex space-x-2 mt-2">
+                          <button
+                              onClick={handleCancelEdit}
+                              className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg"
+                            >
+                              Cancel
+                          </button>
+                          <button
+                            onClick={handleSaveEdit}
+                            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
+                          >
+                            Save
+                          </button>
+                        </div>
+                      </>
+                    ):(
+                      <>
+                        <h1 className="text-xl font-semibold">
+                          {post?.author?.username}
+                        </h1>
+                        <small className="text-gray-400">{post?.body}</small>
+                      </>
+                    )}
+                    
                   </div>
                 </div>
                 <br />
@@ -210,13 +290,15 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
                       </button>
 
                       <span className="material-symbols-outlined"><ShareIcon /></span>
+                      <DropdownOptions post={post} handleDeletePost={handleDeletePost} handleUpdatePost={handleUpdatePost} handleReportPost={handleReportPost} />
+
                     </div>
                     <p>{post?.likes_count ?? 0}&nbsp;likes</p>
                     
                   </div>
                 </div>
                 
-                <form className="mt-4" onSubmit={postComment}>   
+                <form className="mt-5" onSubmit={postComment}>   
                   <label htmlFor="search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                   <div className="relative">
                       <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
