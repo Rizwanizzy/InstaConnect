@@ -7,6 +7,7 @@ import userProfileApi from '../api/userProfileApi';
 import { BASE_URL } from '../utils/constants';
 import ProfileUpdateModal from '../components/ProfileUpdateModal';
 import PostDetailModal from '../components/PostDetailModal';
+import DisplayPicture from '../images/Default-Profile-Picture1.png'
 
 const UserPage = styled.div`
   display: flex;
@@ -70,7 +71,6 @@ const ProfilePhoto = styled.div`
 const ProfileInfo = styled.div`
 .name {
   font-size: 1.5em;
-  color: #545454;
   margin-bottom: 0;
   font-weight: 600
 }
@@ -202,14 +202,18 @@ const ProfilePage = () => {
           <ProfileUpdateModal isVisible={showProfileModal} onClose={() =>setShowProfileModal(false)} />
           <PostDetailModal isVisible={showPostDetailModal} onClose={() =>setShowPostDetailModal(false)} postID={postId}/>
           <label htmlFor="profilePhotoInput">
-            <ProfilePhoto role='button' onClick={() =>setShowProfileModal(true)} title='Click to edit photo'>
-              <img src={`${BASE_URL}${profile?.display_pic}`} alt="profile" />
+            <ProfilePhoto role='button' onClick={() => user?.email === profile?.email && setShowProfileModal(true)}>
+              <img src={ 
+                user?.email === profile?.email?
+                user?.display_pic ? `${BASE_URL}${user?.display_pic}` : DisplayPicture
+                                                                      : profile?.display_pic?`${BASE_URL}${profile.display_pic}` : DisplayPicture} alt="profile" />
             </ProfilePhoto>
           </label>
           <ProfileInfo>
             <div className="profile-content">
               <UserName>
-                <p className="name">{profile?.username?? ""}</p>
+                <p className="name ">{profile?.username?? ""}</p>
+                {user?.email === profile?.email?'':<button className='btn btn-primary ml-5' style={{ width: '75px'}}>Follow</button>}
               </UserName>
               <div className="stats">
                 <div className="flex">
@@ -232,7 +236,11 @@ const ProfilePage = () => {
                   </div>
                 </div>
               </div>
-              <p className="about">{profile?.first_name?? ""}  {profile?.last_name ?? ""} </p>
+              <p className="about">
+                {user?.email === profile?.email
+                  ? `${user?.first_name ?? ""} ${user?.last_name ?? ""}`
+                  : `${profile?.first_name ?? ""} ${profile?.last_name ?? ""}`}
+              </p>              
               <p className="about">{profile?.email?? ""}</p>
             </div>
           </ProfileInfo>

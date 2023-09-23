@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import UpdateUserDetailApi from '../api/UpdateUserDetailApi'
 import { BASE_URL } from '../utils/constants';
 import { getUser } from '../redux/slice'
+import DisplayPicture from '../images/Default-Profile-Picture1.png'
 
 const ProfileUpdateModal = ({ isVisible, onClose }) => {
 
@@ -63,7 +64,7 @@ const ProfileUpdateModal = ({ isVisible, onClose }) => {
       id="wrapper"
       onClick={handleClose}
     >
-      <div className="m-2 w-full md:w-3/5 flex flex-col">
+      <div className="m-2 w-full md:w-2/5 flex flex-col">
         <button className="text-white text-xl place-self-end" onClick={onClose}>
           x
         </button>
@@ -73,7 +74,7 @@ const ProfileUpdateModal = ({ isVisible, onClose }) => {
               Update User Details
             </label>
             <div className="shrink-0 flex justify-center">
-                    <img id='preview_img' className="border-b-2 w-36 h-36 object-cover rounded-full my-2 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]" src={`${BASE_URL}`+display_pic} alt="Current" />
+                    <img id='preview_img' className="border-b-2 w-36 h-36 object-cover rounded-full my-2 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]" src={ user?.display_pic ? `${BASE_URL}${user?.display_pic}` : DisplayPicture} alt="" />
             </div>
             <div>
               <label
@@ -90,7 +91,7 @@ const ProfileUpdateModal = ({ isVisible, onClose }) => {
               />
             </div>
               <div>
-                  <label htmlFor="firstname" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">First Name</label>
+                  <label htmlFor="firstname" className="block mb-2 text-sm font-medium text-gray-900 dark:text-black">First Name</label>
                   <input 
                   type="text" 
                   id="firstname" 
@@ -100,7 +101,7 @@ const ProfileUpdateModal = ({ isVisible, onClose }) => {
                   onChange={onChange}/>
               </div>
               <div>
-                  <label htmlFor="lastname" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Last Name</label>
+                  <label htmlFor="lastname" className="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Last Name</label>
                   <input 
                   value={last_name}
                   name='last_name'
@@ -110,11 +111,11 @@ const ProfileUpdateModal = ({ isVisible, onClose }) => {
                   />
               </div>
               <div>
-                  <label htmlFor="E-mail" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email Address</label>
+                  <label htmlFor="E-mail" className="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Email Address</label>
                   <input defaultValue={email} type="email" id="E-mail" aria-label="disabled input" className="mb-2 bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"  disabled></input>
               </div>
               <div>
-                  <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
+                  <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Username</label>
                   <input defaultValue={username} type="text" id="username" aria-label="disabled input" className="mb-6 bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500" disabled></input>
               </div>
               <button

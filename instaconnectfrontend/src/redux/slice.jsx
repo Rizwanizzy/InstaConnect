@@ -92,6 +92,14 @@ export const logout = createAsyncThunk(
     }
 )
 
+export const resetPostsState = createAsyncThunk(
+    'users/resetPostState',
+    async(_, {getState}) =>{
+        const state = getState().user
+        state.posts = []
+    }
+)
+
 export const checkAuth = createAsyncThunk(
     'users/verify',
     async(_, thunkAPI) =>{
@@ -102,11 +110,11 @@ export const checkAuth = createAsyncThunk(
                 method:'POST',
                 headers:{
                     Accept:'application/json',
-                    'Content-Type':'application/json'
+                    'Content-Type':'application/json',
                 },
                 body,
             })
-            const data = await res.join()
+            const data = await res.json()
 
             if(res.status === 200){
                 const { dispatch } = thunkAPI
@@ -170,14 +178,18 @@ const INITIAL_STATE ={
     loading:false,
     registered:false,
     isSuperuser:false,
+    posts:[],
 }
 
 const userSlice = createSlice({
     name:'user',
     initialState:INITIAL_STATE,
     reducers:{
-        resetRegistered:state =>{
+        resetRegistered:(state) =>{
             state.registered = false
+        },
+        resetPostsState: (state) =>{
+            state.posts = []
         },
     },
 

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch,useSelector } from "react-redux";
-import { Link,useNavigate,Navigate } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import { resetRegistered,login } from "../redux/slice";
 import appStores from '../images/appstore.png'
 import loginImage1 from '../images/network.jpg'
 import '../assets/css/fonts.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Loading from "../components/Loading";
 
 const LoginPage = () => {
 
@@ -30,10 +31,9 @@ const LoginPage = () => {
     })
 
     useEffect(() =>{
-        if(registered) {
-            dispatch(resetRegistered())
-        }
-    },[dispatch,registered])
+        if(registered) dispatch(resetRegistered())
+    },[registered,dispatch])
+
 
     useEffect(() =>{
         if(isAuthenticated) {
@@ -49,6 +49,8 @@ const LoginPage = () => {
         setFormData({...formData , [e.target.name]:e.target.value})
     }
 
+    
+
     const handleLogin = async (e) =>{
         e.preventDefault()
         dispatch(login({email,password}))
@@ -61,6 +63,9 @@ const LoginPage = () => {
         <div className="col-md-6 mt-2">
           <img src={loginImage1} alt="login Image" className="img-fluid" />
         </div>
+        {loading ? (
+            <Loading />
+        ):(
         <div className="col-md-6 mt-5">
             <div className="d-flex flex-column align-items-center justify-content-center">
 
@@ -99,6 +104,8 @@ const LoginPage = () => {
                 </div>
             </div>
         </div>
+                   
+        )}
       </div>
     </div>
   );

@@ -7,13 +7,15 @@ import ChatIcon from '@mui/icons-material/Chat';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Avatar } from '@mui/material'
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '../redux/slice';
+import { logout,resetPostsState } from '../redux/slice';
 import PostModal from './PostModal';
+import Search from './Search';
 import { BASE_URL } from '../utils/constants';
+import DisplayPicture from '../images/Default-Profile-Picture1.png'
 
 const NavBarWrapper = styled.nav`
   position: fixed;
@@ -119,7 +121,10 @@ const LogoutButton = styled.button`
 
 // import Create from './navigateTo/Create';
 const NavBar = () => {
+    const navigate = useNavigate()
     const [show,setShow] = useState(false)
+    const [showSearch , setShowSearch] = useState(false)
+
     const {user,isAuthenticated} = useSelector(state => state.user)
     const dispatch = useDispatch()
 
@@ -127,6 +132,7 @@ const NavBar = () => {
 
     const handleLogout = () =>{
         dispatch(logout())
+        dispatch(resetPostsState())
     }
 
     const createPost = () =>{
@@ -136,6 +142,15 @@ const NavBar = () => {
         setShow(true)
       }
     }
+
+    const openSearch = () =>{
+      setShowSearch(true)
+    }
+
+    const closeSearch = () =>{
+      setShowSearch(false)
+    }
+
   return (
     <NavBarWrapper>
       <Logo to='/'>Instaconnect</Logo>
@@ -144,7 +159,7 @@ const NavBar = () => {
           <HomeIcon />
           <span>Home</span>
         </NavButton>
-        <NavButton to="#">
+        <NavButton onClick={openSearch}>
           <SearchIcon />
           <span>Search</span>
         </NavButton>
@@ -166,7 +181,7 @@ const NavBar = () => {
         </NavButton>
         <AvatarContainer to={`/profile/${email}`}>
           <Avatar className="avatar">
-            <img src={`${BASE_URL}${user?.display_pic}`} alt="" />
+            <img src={ user?.display_pic ? `${BASE_URL}${user?.display_pic}` : DisplayPicture} alt="" />
           </Avatar>
           <span>Profile</span>
         </AvatarContainer>
@@ -176,6 +191,7 @@ const NavBar = () => {
         </LogoutButton>
       </ButtonContainer>
       <PostModal isVisible={show} onClose={() => setShow(false)} />
+      <Search isVisible={showSearch} onClose={closeSearch} />
     </NavBarWrapper>
     
   )

@@ -15,5 +15,8 @@ urlpatterns = [
     path('like/<int:pk>/', LikeView.as_view(), name='like-post'),
     path('create-comment/<int:pk>/', CreateComment.as_view(), name='add-comment'),
     path('delete-comment/<int:pk>/', DeleteComment.as_view(), name='delete-comment'),
+
+    path('search-user/',UserSearchViewSet.as_view(),name='search-user'),
+
 ]
 

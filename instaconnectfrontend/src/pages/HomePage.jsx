@@ -43,13 +43,13 @@ const ContentContainer = styled.div`
 
 const HomePage = () => {
 
+  const {user , loading , isAuthenticated } = useSelector(state =>state.user)
+  const [posts,setPosts] = useState([])
+  const [postId,setPostId] = useState(null)
   const [showPostModal,setShowPostModal] = useState(false)
   const [showPostDetailModal,setShowPostDetailModal] = useState(false)
-  const [posts,setPosts] = useState([])
-  const [postId,setPostId] = useState()
   const [initialCaption, setInitialCaption] = useState('');
   const [initialImage, setInitialImage] = useState(null);
-  const { loading , isAuthenticated,user } = useSelector(state =>state.user)
 
   useEffect(() =>{
     const fetchData = async () => {
@@ -69,7 +69,6 @@ const HomePage = () => {
   const fetchData = async () =>{
     try {
       const data =await postListApi()
-      setPosts([])
       setPosts(data)
     } catch (error) {
       console.error(error)
@@ -163,7 +162,7 @@ const HomePage = () => {
             <div className="flex justify-between items-center border-b-2  border-gray-100">
               <div className="flex items-center ">
                 <img
-                  className="w-10 h-10 rounded-full"
+                  className="w-10 h-12 rounded-full"
                   src={`${BASE_URL}${post.author.display_pic}`}
                   alt="user_image"
                 />

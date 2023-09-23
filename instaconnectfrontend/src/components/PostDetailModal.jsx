@@ -149,7 +149,7 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
       id="wrapper"
       onClick={handleClose}
     >
-      <div className="m-2 w-3/5 flex flex-col bg-white p-2 rounded">
+      <div className="m-2 w-3/5 flex flex-col p-2 rounded">
         <button className="text-white text-xl place-self-end" onClick={onClose}>
           x
         </button>
@@ -157,7 +157,7 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
           <div className="flex content-between shadow-lg flex-grow">
             <div className="flex flex-wrap content-center justify-center rounded-r-md w-1/2">
               <img
-                className="w-full h-full bg-center bg-no-repeat bg-cover rounded-l-md"
+                className="w-100 bg-center bg-no-repeat bg-cover rounded-l-md"
                 src={`${BASE_URL}` + post?.img}
                 alt="post_here"
               />
@@ -304,7 +304,7 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
                   <label htmlFor="search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                   <div className="relative">
                       <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <img className="w-8 h-8 text-gray-500 dark:text-gray-400" aria-hidden="true" src={`${BASE_URL}` + post?.author?.display_pic} alt='user'></img>
+                      <img className="w-8 h-10 text-gray-500 dark:text-gray-400" aria-hidden="true" src={`${BASE_URL}` + post?.author?.display_pic} alt='user'></img>
                       </div>
                       <input ref={inputRef} value={comment} onChange={(e)=>setComment(e.target.value)} type="search" id="search" className="block w-full pt-4 pb-4 pl-5 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Your comment here.!" required />
                       <button type="submit" className="text-white absolute right-2.5 bottom-3.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Post</button>

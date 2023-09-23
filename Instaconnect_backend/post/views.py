@@ -19,16 +19,19 @@ class PostHomeView(APIView):
     def get(self,request):
         try:
             user =request.user
-            followers=Follow.objects.filter(follower=user)
-            posts_list=[]
-            post_by_follower =Posts.objects.none()
-            if followers:
-                for fuser in followers:
-                    post_by_follower=Posts.objects.filter(author=fuser.following).exclude(is_deleted  = True)
-                    posts_list.append(post_by_follower)
-            post_by_user = Posts.objects.filter(author=user).exclude(is_deleted = True).order_by('-created_at')
-            posts_list = post_by_follower | post_by_user
-            serializer = PostSerializer(posts_list,many=True)
+            # followers=Follow.objects.filter(follower=user)
+            # posts_list=[]
+            # post_by_follower =Posts.objects.none()
+            # if followers:
+            #     for fuser in followers:
+            #         post_by_follower=Posts.objects.filter(author=fuser.following).exclude(is_deleted  = True)
+            #         posts_list.append(post_by_follower)
+            # post_by_user = Posts.objects.filter(author=user).exclude(is_deleted = True).order_by('-created_at')
+            # posts_list = post_by_follower | post_by_user
+            # serializer = PostSerializer(posts_list,many=True)
+            posts_by_user = Posts.objects.filter(author=user,is_deleted=False).order_by('-created_at')
+            serializer = PostSerializer(posts_by_user,many=True)
+            print('home page is working')
             return Response(serializer.data,status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -173,3 +176,27 @@ class ProfileView(APIView):
             return Response(context,status=status.HTTP_200_OK)
         except UserAccount.DoesNotExist:
             return Response("User Not Fount",status=status.HTTP_404_NOT_FOUND)
+        
+#==================================SEARCH USERS==================================================
+
+class UserSearchViewSet(APIView):
+    serializer_class = UserSerializer
+
+    def get(self,request,*args, **kwargs):
+        try:
+            query = self.request.GET.get('q','')
+            if query:
+                users= UserAccount.objects.filter(
+                    models.Q(username__icontains=query) |
+                    models.Q(first_name__icontains=query) |
+                    models.Q(last_name__icontains=query)
+                )
+                serializer = UserSerializer(users,many=True)
+                print('search user',serializer)
+                return Response(serializer.data,status=status.HTTP_200_OK)
+            else:
+                print('no user accoding to the search query')
+                return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            print('Error:', str(e))
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
