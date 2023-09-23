@@ -7,6 +7,7 @@ import {MDBTable, MDBTableBody } from 'mdb-react-ui-kit';
 import { BASE_URL } from '../utils/constants';
 import styled from 'styled-components';
 import { NavLink } from 'react-router-dom';
+import PostDetailModal from './PostDetailModal';
 
 const CenteredTable = styled(MDBTable)`
   width: 80%;
@@ -15,9 +16,10 @@ const CenteredTable = styled(MDBTable)`
 `;
 
 const StyledTableRow = styled.tr`
-  border-bottom: 1px solid rgb(254, 254, 254);
-
+  border-width:0px;
   td {
+    border-bottom: 0px none rgb(254, 254, 254);
+    border-width:0;
     width:32%;
     &:hover {
       cursor: pointer;
@@ -42,6 +44,8 @@ const Search = ({ isVisible, onClose }) => {
   const [inputValue, setInputValue] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [searchData , setSearchData] = useState([])
+  const [postId,setPostId] =useState(null)
+  const [showPostDetailModal,setShowPostDetailModal] = useState(false)
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
@@ -64,10 +68,18 @@ const Search = ({ isVisible, onClose }) => {
     try {
       const data = await SearchApi(inputValue)
       setSearchData(data)
-      console.log(searchData)
+      const usersData = data?.user_data?.users;
+      const postsData = data?.post_data?.posts;
+      console.log('users:',usersData)
+      console.log('posts:',postsData)
     } catch(error) {
-      console.error()
+      console.error(error)
     }
+  }
+
+  const handleViewPost = (postId) =>{
+    setPostId(postId)
+    setShowPostDetailModal(true)
   }
 
   return (
@@ -77,6 +89,7 @@ const Search = ({ isVisible, onClose }) => {
           <Modal.Title>Search</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+        <PostDetailModal isVisible={showPostDetailModal} onClose={() =>setShowPostDetailModal(false)} postID={postId}/>
           <Form>
             <Form.Group className={`mb-3 ${isFocused ? 'focused' : ''}`} controlId="exampleForm.ControlInput1">
               <label htmlFor="searchInput" className="sr-only">
@@ -98,9 +111,12 @@ const Search = ({ isVisible, onClose }) => {
           </Form>
           {searchData ? 
             <CenteredTable>
-              <MDBTable align='middle'>
+              <MDBTable align='middle' style={{ borderWidth: '0px',marginTop:'-10px' }}>
                 <MDBTableBody>
-                    {searchData?.map((item) => (
+                {searchData?.user_data?.users && searchData.user_data.users.length > 0 && (
+                  <p style={{borderWidth:'0' ,fontWeight: 'bold' , marginBottom:'-10px'}} className='text-bold'>Users</p>
+                  )}
+                    {searchData?.user_data?.users?.map((item) => (
                     <StyledTableRow >
                       <NavLink to={`/profile/${item.email}`} style={{ textDecoration: 'none' }}>
                         <td>
@@ -108,7 +124,7 @@ const Search = ({ isVisible, onClose }) => {
                               <img
                                   src={item.display_pic ? `${BASE_URL}${item.display_pic}` : '../images/default_picture.png' }
                                   alt={item.username}
-                                  style={{ width: '45px', height: '50px' }}
+                                  style={{ width: '45px', height: '45px' }}
                                   className='rounded-circle'
                               />
                               <div className='ms-3'>
@@ -120,7 +136,31 @@ const Search = ({ isVisible, onClose }) => {
                       </NavLink>
                     </StyledTableRow>
                     ))}
-                    
+
+                {searchData?.post_data?.posts && searchData.post_data.posts.length > 0 && (
+                  <p style={{borderWidth:'0' ,fontWeight: 'bold' , marginBottom:'-10px'}} className='text-bold'>Posts</p>
+                  )}
+                    {searchData?.post_data?.posts?.map((item) => (
+                    <StyledTableRow >
+                      <NavLink key={item.id} onClick={() => handleViewPost(item.id)} style={{ textDecoration: 'none' }}>
+                        <td>
+                            <div className='d-flex align-items-center'>
+                              <img
+                                  src={item.img ? `${BASE_URL}${item.img}` : '../images/default_picture.png' }
+                                  alt={item.username}
+                                  style={{ width: '90px', height: '60px',borderRadius: '10px' }}
+                                  className=''
+                              />
+                              <div className='ms-3'>
+                                <p className='fw-bold mb-0'>{item.author.username}</p>                            
+                                <p className='text-muted mb-1'>{item.body}</p>
+                              </div>
+                            </div>
+                        </td>
+                      </NavLink>
+                    </StyledTableRow>
+                    ))}
+                  
                 </MDBTableBody>
               </MDBTable>
             </CenteredTable>:''

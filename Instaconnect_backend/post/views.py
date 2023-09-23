@@ -4,6 +4,7 @@ from rest_framework import permissions,status,generics
 from .serializer import * 
 from .models import *
 from users.models import UserAccount
+from django.db.models import Q
 # Create your views here.
 
 
@@ -179,21 +180,36 @@ class ProfileView(APIView):
         
 #==================================SEARCH USERS==================================================
 
-class UserSearchViewSet(APIView):
+class SearchViewSet(APIView):
     serializer_class = UserSerializer
 
     def get(self,request,*args, **kwargs):
         try:
             query = self.request.GET.get('q','')
             if query:
-                users= UserAccount.objects.filter(
+                user_results= UserAccount.objects.filter(
                     models.Q(username__icontains=query) |
                     models.Q(first_name__icontains=query) |
-                    models.Q(last_name__icontains=query)
+                    models.Q(last_name__icontains=query),is_active=True
                 )
-                serializer = UserSerializer(users,many=True)
-                print('search user',serializer)
-                return Response(serializer.data,status=status.HTTP_200_OK)
+
+                post_results = Posts.objects.filter(
+                    Q(body__icontains=query,is_deleted=False)
+                )
+                user_serializer = UserSerializer(user_results,many=True)
+                post_serializer = PostSerializer(post_results,many=True)
+                user_data = {
+                    'users':user_serializer.data,
+                }
+                post_data = {
+                    'posts':post_serializer.data
+                }
+                response_data = {
+                    'user_data':user_data,
+                    'post_data':post_data
+                }
+                print('search results',response_data)
+                return Response(response_data,status=status.HTTP_200_OK)
             else:
                 print('no user accoding to the search query')
                 return Response(status=status.HTTP_204_NO_CONTENT)

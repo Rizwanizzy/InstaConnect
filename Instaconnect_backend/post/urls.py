@@ -16,7 +16,7 @@ urlpatterns = [
     path('create-comment/<int:pk>/', CreateComment.as_view(), name='add-comment'),
     path('delete-comment/<int:pk>/', DeleteComment.as_view(), name='delete-comment'),
 
-    path('search-user/',UserSearchViewSet.as_view(),name='search-user'),
+    path('search-request/',SearchViewSet.as_view(),name='search-request'),
 
 ]
 
