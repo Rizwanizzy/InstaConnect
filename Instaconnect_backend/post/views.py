@@ -5,6 +5,7 @@ from .serializer import *
 from .models import *
 from users.models import UserAccount
 from django.db.models import Q
+from operator import attrgetter
 # Create your views here.
 
 
@@ -20,18 +21,15 @@ class PostHomeView(APIView):
     def get(self,request):
         try:
             user =request.user
-            # followers=Follow.objects.filter(follower=user)
-            # posts_list=[]
-            # post_by_follower =Posts.objects.none()
-            # if followers:
-            #     for fuser in followers:
-            #         post_by_follower=Posts.objects.filter(author=fuser.following).exclude(is_deleted  = True)
-            #         posts_list.append(post_by_follower)
-            # post_by_user = Posts.objects.filter(author=user).exclude(is_deleted = True).order_by('-created_at')
-            # posts_list = post_by_follower | post_by_user
-            # serializer = PostSerializer(posts_list,many=True)
-            posts_by_user = Posts.objects.filter(author=user,is_deleted=False).order_by('-created_at')
-            serializer = PostSerializer(posts_by_user,many=True)
+            followers=Follow.objects.filter(follower=user)
+            posts_by_followers=[]
+            post_by_user =Posts.objects.filter(author=user,is_deleted=False).order_by('-created_at')
+            for follower in followers:
+                posts=Posts.objects.filter(author=follower.following,is_deleted=False).order_by('-created_at')
+                posts_by_followers.extend(posts)
+            all_posts = list(post_by_user)+posts_by_followers
+            all_posts_sorted = sorted(all_posts,key=attrgetter('created_at'),reverse=True)
+            serializer = PostSerializer(all_posts_sorted,many=True)
             print('home page is working')
             return Response(serializer.data,status=status.HTTP_200_OK)
         except:
@@ -216,3 +214,42 @@ class SearchViewSet(APIView):
         except Exception as e:
             print('Error:', str(e))
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+#=======================================FOLLOW USER=================================
+class FollowUserView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self,request,pk):
+        try:
+            user = request.user
+            follows = UserAccount.objects.get(id=pk)
+            is_following = Follow.objects.filter(follower = user,following = follows)
+            if is_following:
+                is_following.delete()
+                response_msg = 'Unfollowed Successfully'
+                # return Response('Unfollowed Successfully',status=status.HTTP_200_OK)
+            else:
+                new_follow = Follow(follower=user,following=follows)
+                new_follow.save()
+                response_msg = 'Followed Successfully'
+                # return Response('followed Successfully',status=status.HTTP_200_OK)
+            is_following_now = Follow.objects.filter(follower = user , following = follows)
+
+            is_following_data = [
+                
+                {
+                    'id':follow.id,
+                    'follower_id':follow.follower.id,
+                    'following_id':follow.following.id,
+                }
+                for follow in is_following_now
+            ]
+
+            return Response({
+                'message':response_msg,
+                'is_following':is_following_data,
+            },status=status.HTTP_200_OK)
+        except UserAccount.DoesNotExist:
+            return Response('User not found',status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response(str(e),status=status.HTTP_500_INTERNAL_SERVER_ERROR)

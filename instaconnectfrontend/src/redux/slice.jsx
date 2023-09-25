@@ -2,6 +2,7 @@ import {createSlice,createAsyncThunk} from '@reduxjs/toolkit'
 import axios from 'axios'
 import {BASE_URL} from '../utils/constants'
 import jwt_decode from 'jwt-decode'
+import followUserApi from '../api/followUserApi'
 
 export const register = createAsyncThunk(
     'users/register',
@@ -172,6 +173,28 @@ export const updateToken = createAsyncThunk(
     }
 )
 
+export const followUser = createAsyncThunk(
+    'user/followUser',
+    async (userId,thunkAPI) => {
+        try {
+            await followUserApi(userId)
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error)
+        }
+    }
+)
+
+export const unfollowUser = createAsyncThunk(
+    'user/unfollowUser',
+    async (userId,thunkAPI) =>{
+        try {
+            await followUserApi(userId)
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error)
+        }
+    }
+)
+
 const INITIAL_STATE ={
     user:null,
     isAuthenticated:false,
@@ -179,6 +202,7 @@ const INITIAL_STATE ={
     registered:false,
     isSuperuser:false,
     posts:[],
+    isFollowing:false,
 }
 
 const userSlice = createSlice({
@@ -268,6 +292,14 @@ const userSlice = createSlice({
         })
         .addCase(updateToken.rejected, state =>{
             state.loading = false
+        })
+
+        .addCase(followUser.fulfilled, (state) =>{
+            state.isFollowing = true
+        })
+
+        .addCase(unfollowUser.fulfilled, (state) =>{
+            state.isFollowing = false
         })
     }
 })
