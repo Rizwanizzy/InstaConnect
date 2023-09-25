@@ -25,7 +25,7 @@ class PostHomeView(APIView):
             posts_by_followers=[]
             post_by_user =Posts.objects.filter(author=user,is_deleted=False).order_by('-created_at')
             for follower in followers:
-                posts=Posts.objects.filter(author=follower.following,is_deleted=False).order_by('-created_at')
+                posts=Posts.objects.filter(author=follower.following,is_deleted=False,is_blocked=False).order_by('-created_at')
                 posts_by_followers.extend(posts)
             all_posts = list(post_by_user)+posts_by_followers
             all_posts_sorted = sorted(all_posts,key=attrgetter('created_at'),reverse=True)
@@ -87,6 +87,21 @@ class UpdatePostView(APIView):
         except Posts.DoesNotExist:
             print('except condition')
             return Response('No such post found.')
+
+class ReportPostView(APIView):
+    permission_classes=[permissions.IsAuthenticated]
+
+    def post(self,request,pk):
+        try:
+            post = Posts.objects.get(id=pk)
+            if request.user in post.reported_users.all():
+                return Response('You have already reported this post.' ,status=status.HTTP_200_OK)
+            post.reported_users.add(request.user)
+            return Response('Post Reported',status=status.HTTP_200_OK)
+        except Posts.DoesNotExist:
+            return Response('Post not found',status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response(str(e),status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 #=====================================FETCH POST DETAILS===============================

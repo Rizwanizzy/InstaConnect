@@ -16,6 +16,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import likePostApi from '../api/likePostApi';
 import ShareIcon from '@mui/icons-material/Share';
+import reportPostApi from '../api/reportPostApi';
 
 
 
@@ -101,9 +102,15 @@ const HomePage = () => {
 
   const handleReportPost = async (postId) => {
     try {
+      await reportPostApi(postId,fetchData)
+      toast.success('Post Reported successfully',{
+        position:'top-center'
+      })
 
     } catch (err) {
-
+      toast.error('Failure, post not Reported!',{
+        position:'top-center'
+      })
     }
   };
 

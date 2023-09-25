@@ -9,6 +9,8 @@ from rest_framework import permissions,status,generics
 
 from .serializer import UserSerializer,UserCreateSerializer
 from .models import UserAccount
+from post.models import *
+from post.serializer import *
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -109,3 +111,27 @@ class BlockUser(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response(str(e), status= status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class BlockPost(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self,request,id):
+        try:
+            post = Posts.objects.get(id=id)
+            print('post is ',post)
+            if post.is_blocked:
+                post.is_blocked=False
+            else:
+                post.is_blocked=True
+            post.save()
+            return Response(status=status.HTTP_200_OK)
+        except Posts.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response(str(e),status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class ReportedPostList(generics.ListAPIView):
+    permission_classes = [permissions.IsAdminUser]
+    queryset = Posts.objects.filter(is_blocked=False,reported_users__isnull=False).order_by('-created_at')[::-1]
+    serializer_class = PostSerializer

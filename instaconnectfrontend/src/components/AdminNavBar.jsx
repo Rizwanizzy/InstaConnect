@@ -104,7 +104,7 @@ const AdminNavBar = () => {
           </SidebarLink>
         </SidebarListItem>
         <SidebarListItem>
-          <SidebarLink to="">
+          <SidebarLink to="/reported-posts">
           <Icon ><BsMenuButtonWideFill className='icon'/></Icon>Reports
           </SidebarLink>
         </SidebarListItem>

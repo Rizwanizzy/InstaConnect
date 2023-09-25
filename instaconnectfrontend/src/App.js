@@ -11,6 +11,7 @@ import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
 import AdminDashboard from './pages/AdminDashboard';
 import UsersList from './pages/UsersList';
+import ReportedPostsList from './pages/ReportedPostsList';
 
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
 
           <Route path='/admin-dashboard' element={<AdminDashboard />} />
           <Route path='/users' element={<UsersList />} />
+          <Route path='/reported-posts' element={<ReportedPostsList />} />
         </Routes>
       </Router>
   );
