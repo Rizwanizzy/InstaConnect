@@ -169,7 +169,7 @@ const HomePage = () => {
             <div className="flex justify-between items-center border-b-2  border-gray-100">
               <div className="flex items-center ">
                 <img
-                  className="w-10 h-12 rounded-full"
+                  className="w-10 h-10 rounded-full"
                   src={`${BASE_URL}${post.author.display_pic}`}
                   alt="user_image"
                 />

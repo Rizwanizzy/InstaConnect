@@ -291,6 +291,12 @@ const ProfilePage = () => {
               </UserName>
               <div className="stats">
                 <div className="flex">
+                  <div className="lg:mr-4 p-3 text-center">
+                    <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-900">
+
+                    </span>
+                    <CustomText style={{ fontWeight: 'bold' }} className="text-sm text-blueGray-400">{profile?.total_posts ?? "0"}  Posts</CustomText>
+                  </div>
                   <div className="mr-4 p-3 text-center">
                     <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-900">
                     </span>
@@ -302,12 +308,7 @@ const ProfilePage = () => {
                     </span>
                     <CustomText style={{ fontWeight: 'bold' }} className="text-sm text-blueGray-400">{profile?.follower_count ?? "0"} Following</CustomText>
                   </div>
-                  <div className="lg:mr-4 p-3 text-center">
-                    <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-900">
-
-                    </span>
-                    <CustomText style={{ fontWeight: 'bold' }} className="text-sm text-blueGray-400">{profile?.total_posts ?? "0"}  Posts</CustomText>
-                  </div>
+                  
                 </div>
               </div>
               <p className="about">
