@@ -84,7 +84,6 @@ const ProfileInfo = styled.div`
 }
 
 button {
-  background-color: #0095f6;
   color: #fff;
   font-size: 1.1em;
   width: 6em;
@@ -190,7 +189,7 @@ const ProfilePage = () => {
   },[email,showPostDetailModal])
 
   useEffect(() => {
-    if (profile) {
+    if (profile && profile.id) {
       const localStorageKey = `following_${profile.id}`;
       const isFollowingInLocalStorage = localStorage.getItem(localStorageKey);
       setIsFollowingLocal(isFollowingInLocalStorage === 'true');
@@ -211,7 +210,7 @@ const ProfilePage = () => {
     try {
       const updatedProfile = { ...profile}
 
-      if (isFollowing) {
+      if (isFollowingLocal) {
         updatedProfile.following_count-=1
         dispatch(unfollowUser(userId))
         setIsFollowingLocal(false)
@@ -256,15 +255,39 @@ const ProfilePage = () => {
             <div className="profile-content">
               <UserName>
                 <p className="name mr-5">{profile?.username?? ""}</p>
-                {user?.email !== profile?.email && (
-                  <button
-                    className={isFollowing ? 'btn btn-secondary' : 'btn btn-primary'}
-                    style={{ width: isFollowing ? '95px' : '75px' }}
-                    onClick={() => handleToggleFollow(profile.id)}
-                  >
-                    {isFollowing ? 'Unfollow' : 'Follow'}
-                  </button>
-                )}
+                {profile &&
+                  user &&
+                  profile.email !== user.email && (
+                    <div>
+                      {isFollowingLocal ? (
+                        <button
+                          type="button"
+                          className="btn btn-secondary"
+                          // data-te-ripple-init
+                          data-te-ripple-color="light"
+                          title={`unfollow ${profile.username}`}
+                          onClick={() => handleToggleFollow(profile.id)}
+                        >
+                          <span className="">
+                            Unfollow
+                          </span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className="btn btn-primary"
+                          // data-te-ripple-init
+                          // data-te-ripple-color="light"
+                          title={`follow ${profile.username}`}
+                          onClick={() => handleToggleFollow(profile.id)}
+                        >
+                          <span className="">
+                            Follow
+                          </span>
+                        </button>
+                      )}
+                    </div>
+                  )}
               </UserName>
               <div className="stats">
                 <div className="flex">

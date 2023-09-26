@@ -95,7 +95,7 @@ const PostModal = ({ isVisible, onClose, postID, initialCaption, initialImage })
                 {previewImageUrl && (
                   <img
                     id="preview_img"
-                    className="w-90 object-cover rounded-lg my-2"
+                    className="w-80 object-cover rounded-lg my-2"
                     src={
                       postID
                         ? `${BASE_URL}${postImage}`

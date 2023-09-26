@@ -133,5 +133,11 @@ class BlockPost(APIView):
 
 class ReportedPostList(generics.ListAPIView):
     permission_classes = [permissions.IsAdminUser]
-    queryset = Posts.objects.filter(is_blocked=False,reported_users__isnull=False).order_by('-created_at')[::-1]
-    serializer_class = PostSerializer
+
+    def get(self,request):
+        try:
+            queryset = Posts.objects.filter(reported_users__isnull=False).order_by('-created_at')[::-1]
+            serializer = PostSerializer(queryset , many = True)
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)

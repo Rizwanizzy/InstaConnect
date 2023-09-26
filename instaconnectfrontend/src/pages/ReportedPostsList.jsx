@@ -176,8 +176,9 @@ const ReportedPostsList = () => {
 
                             </td>
                             <td>
+                              {console.log('image url here',item.img)}
                                 <img
-                                    src={item.img}
+                                    src={`${BASE_URL}${item.img}`}
                                     alt={item.username}
                                     style={{ width: '140px', height: '100px' , borderRadius:'10%'}}
                                     
@@ -199,9 +200,9 @@ const ReportedPostsList = () => {
                             </td>
                             <td>
                                 {item.is_blocked ? (
-                                <button className="bg-red-500 rounded-md p-2 text-white font-bold hover:bg-red-600 relative" onClick={() => blockPost(item.id)}>Unblock</button>
+                                <button className="bg-green-500 rounded-md p-2 text-white font-bold hover:bg-red-600 relative" onClick={() => blockPost(item.id)}>Unblock</button>
                                 ):(
-                                <button className="bg-green-500 rounded-md p-2 text-white font-bold hover:bg-green-600 relative" onClick={() => blockPost(item.id)}>Block</button>
+                                <button className="bg-red-500 rounded-md p-2 text-white font-bold hover:bg-green-600 relative" onClick={() => blockPost(item.id)}>Block</button>
                                 )}
                             </td>
                         </tr>

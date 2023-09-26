@@ -1,11 +1,17 @@
-import axiosInstance from "../utils/axiosInstance";
+import axios from "axios";
+import { BASE_URL } from "../utils/constants";
 
 const reportedPostsListApi = async () => {
     try {
-        const response = await axiosInstance({
-            url:'/reportedposts/',
-            method:'GET',
+        const accessToken = localStorage.getItem('access_token')
+        const response = await axios.get(`${BASE_URL}/reportedposts/`,{
+            headers:{
+                Accept:'application/json',
+                'Content-Type':'application/json',
+                Authorization:`Bearer ${accessToken}`
+            }
         })
+
         if (response.status === 200){
             console.log('homepage',response.data)
             return response.data
