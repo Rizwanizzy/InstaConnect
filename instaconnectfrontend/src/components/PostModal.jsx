@@ -25,6 +25,7 @@ const PostModal = ({ isVisible, onClose, postID, initialCaption, initialImage })
     setPreviewImageUrl(URL.createObjectURL(selectedImage));
   };
 
+
   if (!isVisible) return null;
 
   const handleSubmit = async (e) => {
@@ -90,22 +91,24 @@ const PostModal = ({ isVisible, onClose, postID, initialCaption, initialImage })
               </div>
             )}
 
-            {postImage && (
-              <div className="shrink-0 flex justify-center">
-                {previewImageUrl && (
-                  <img
-                    id="preview_img"
-                    className="w-80 object-cover rounded-lg my-2"
-                    src={
-                      postID
-                        ? `${BASE_URL}${postImage}`
-                        : previewImageUrl
-                    }
-                    alt="Current"
-                  />
-                )}
-              </div>
-            )}
+{postImage && (
+  <div className="shrink-0 flex justify-center">
+    {previewImageUrl && (
+      <img
+        id="preview_img"
+        className="w-80 object-cover rounded-lg my-2"
+        src={
+          previewImageUrl.startsWith('http://127.0.0.1:8000')
+            ? previewImageUrl
+            : postID
+            ? `${BASE_URL}${postImage}`
+            : previewImageUrl
+        }
+        alt="Current"
+      />
+    )}
+  </div>
+)}
 
             <div className="relative my-5" data-te-input-wrapper-init>
               <input

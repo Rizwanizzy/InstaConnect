@@ -22,7 +22,6 @@ const NavBarWrapper = styled.nav`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  z-index: 1;
 `;
 
 const Logo = styled(Link)`
@@ -163,7 +162,7 @@ const NavBar = () => {
           <SearchIcon />
           <span>Search</span>
         </NavButton>
-        <NavButton to="#">
+        <NavButton to="/explore">
           <ExploreIcon />
           <span>Explore</span>
         </NavButton>

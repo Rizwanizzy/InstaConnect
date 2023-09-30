@@ -12,6 +12,8 @@ import ProfilePage from './pages/ProfilePage';
 import AdminDashboard from './pages/AdminDashboard';
 import UsersList from './pages/UsersList';
 import ReportedPostsList from './pages/ReportedPostsList';
+import PostsLists from './pages/PostsLists';
+import ExplorePage from './pages/ExplorePage';
 
 
 function App() {
@@ -29,10 +31,13 @@ function App() {
           <Route path='/admin-login' element={<AdminLogin/>}/>
           <Route path='/register' element={<RegisterPage/>}/>
           <Route path='/home' element={<HomePage/>}/>
+          <Route path='/explore' element={<ExplorePage/>}/>
           <Route path='/profile/:email' element={<ProfilePage />}/>
 
           <Route path='/admin-dashboard' element={<AdminDashboard />} />
           <Route path='/users' element={<UsersList />} />
+          <Route path='/posts-lists' element={<PostsLists />} />
+
           <Route path='/reported-posts' element={<ReportedPostsList />} />
         </Routes>
       </Router>

@@ -83,16 +83,7 @@ const ProfileInfo = styled.div`
   color: #545454;
 }
 
-button {
-  color: #fff;
-  font-size: 1.1em;
-  width: 6em;
-  height: 2em;
 
-  &:hover {
-    background-color: #0081d6;
-  }
-}
 
 .stats {
   margin-left: -17px;
@@ -244,7 +235,7 @@ const ProfilePage = () => {
           <ProfileUpdateModal isVisible={showProfileModal} onClose={() =>setShowProfileModal(false)} />
           <PostDetailModal isVisible={showPostDetailModal} onClose={() =>setShowPostDetailModal(false)} postID={postId}/>
           <label htmlFor="profilePhotoInput">
-            <ProfilePhoto role='button' onClick={() => user?.email === profile?.email && setShowProfileModal(true)}>
+            <ProfilePhoto>
               <img src={ 
                 user?.email === profile?.email?
                 user?.display_pic ? `${BASE_URL}${user?.display_pic}` : DisplayPicture
@@ -255,39 +246,11 @@ const ProfilePage = () => {
             <div className="profile-content">
               <UserName>
                 <p className="name mr-5">{profile?.username?? ""}</p>
-                {profile &&
-                  user &&
-                  profile.email !== user.email && (
-                    <div>
-                      {isFollowingLocal ? (
-                        <button
-                          type="button"
-                          className="btn btn-secondary"
-                          // data-te-ripple-init
-                          data-te-ripple-color="light"
-                          title={`unfollow ${profile.username}`}
-                          onClick={() => handleToggleFollow(profile.id)}
-                        >
-                          <span className="">
-                            Unfollow
-                          </span>
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          className="btn btn-primary"
-                          // data-te-ripple-init
-                          // data-te-ripple-color="light"
-                          title={`follow ${profile.username}`}
-                          onClick={() => handleToggleFollow(profile.id)}
-                        >
-                          <span className="">
-                            Follow
-                          </span>
-                        </button>
-                      )}
-                    </div>
-                  )}
+                {user?.email === profile?.email?
+                <button className='btn btn-secondary w-20' onClick={() => user?.email === profile?.email && setShowProfileModal(true)} >Edit</button>
+                  : 
+                  <button className='btn btn-primary' >Message</button>
+                }
               </UserName>
               <div className="stats">
                 <div className="flex">

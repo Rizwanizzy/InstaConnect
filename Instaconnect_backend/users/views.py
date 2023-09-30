@@ -112,6 +112,17 @@ class BlockUser(APIView):
         except Exception as e:
             return Response(str(e), status= status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+class PostsList(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self,request):
+        try:
+            posts = Posts.objects.all()
+            serializer = PostSerializer(posts,many=True)
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
 class BlockPost(APIView):
     permission_classes = [permissions.IsAdminUser]
 

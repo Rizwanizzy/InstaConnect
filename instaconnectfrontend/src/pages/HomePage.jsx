@@ -176,31 +176,6 @@ const HomePage = () => {
                 <NavLink to={`/profile/${post.author.email}`} className="mb-2 ms-2 mt-2 text-md font-bold cursor-pointer leading-tight text-[#262626] text-decoration-none" >
                   {post.author.username}
                 </NavLink>
-                  {post.author.email !== user.email &&
-                  (post.followers && post.followers.some(
-                    (follower) => follower.follower === user.email
-                  ) ? (
-                  <button type='button'
-                  className='inline-block bg-transparent justify-start leading-normal'
-                  data-te-ripple-init
-                  data-te-ripple-color="light"
-                  title={`unfollow ${post.author.username}`}
-                  onClick={() => handleToggleFollow(post.author.id)}
-                  >
-                    <span className='text-blue-500 text-sm font-medium p-2 font-mono'>Unfollow</span>
-                  </button>
-                  ):(
-                  <button type='button'
-                  className='inline-block bg-transparent justify-start leading-normal'
-                  data-te-ripple-init
-                  data-te-ripple-color="light"
-                  title={`follow ${post.author.username}`}
-                  onClick={() => handleToggleFollow(post.author.id)}
-                  >
-                    <span className='text-blue-500 text-sm font-medium p-2 font-mono'>Follow</span>
-                  </button>
-                  ))}
-                  
                   <span className='font-xs font-mono font-extralight ml-2 text-sm text-gray-400'> {post.created_time} ago</span>
                 
                 

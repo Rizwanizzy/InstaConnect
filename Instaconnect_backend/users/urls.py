@@ -15,6 +15,7 @@ urlpatterns = [
     
     path('userslist/',UsersList.as_view(),name='userslist'),
     path('blockuser/<str:id>',BlockUser.as_view(),name='userslist'),
+    path('postslist/',PostsList.as_view(),name='postlist'),
     path('blockpost/<str:id>/',BlockPost.as_view(),name='blockpost'),
     path('reportedposts/',ReportedPostList.as_view(),name='reportedposts'),
 ]

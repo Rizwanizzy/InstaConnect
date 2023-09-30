@@ -99,7 +99,7 @@ const AdminNavBar = () => {
           </SidebarLink>
         </SidebarListItem>
         <SidebarListItem>
-          <SidebarLink to="">
+          <SidebarLink to="/posts-lists">
           <Icon ><BsListCheck className='icon'/></Icon>Posts
           </SidebarLink>
         </SidebarListItem>
