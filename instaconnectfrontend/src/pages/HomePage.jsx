@@ -17,7 +17,8 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import likePostApi from '../api/likePostApi';
 import ShareIcon from '@mui/icons-material/Share';
 import reportPostApi from '../api/reportPostApi';
-
+import Button from 'react-bootstrap/Button';
+import followUserApi from '../api/followUserApi';
 
 
 const PageContainer = styled.div`
@@ -124,14 +125,15 @@ const HomePage = () => {
     }
   };
 
-  const handleToggleFollow = async (userId)=>{
-    try{
-
+  const handleToggleFollow = async (userId) =>{
+    try {
+        await followUserApi(userId,fetchData)
+    } catch (error) {
+        toast.error('Cannot follow user',{
+            position:'top-center'
+        })
     }
-    catch(error){
-
-    }
-  };
+  }
 
   if(!isAuthenticated && !loading && user === null){
     return <Navigate to='/' />
@@ -173,9 +175,33 @@ const HomePage = () => {
                   src={`${BASE_URL}${post.author.display_pic}`}
                   alt="user_image"
                 />
-                <NavLink to={`/profile/${post.author.email}`} className="mb-2 ms-2 mt-2 text-md font-bold cursor-pointer leading-tight text-[#262626] text-decoration-none" >
+                <NavLink to={`/profile/${post.author.email}`} className="mb-2 mr-3 ms-2 mt-2 text-md font-bold cursor-pointer leading-tight text-[#262626] text-decoration-none" >
                   {post.author.username}
                 </NavLink>
+                {post.author.email !== user.email &&
+                  (post.followers && post.followers.some(
+                    (follower) => follower.follower === user.email
+                  ) ? (
+                  <Button type='button'
+                  variant='outline-secondary'
+                  data-te-ripple-init
+                  data-te-ripple-color="light"
+                  title={`unfollow ${post.author.username}`}
+                  onClick={() => handleToggleFollow(post.author.id)}
+                  >
+                    Unfollow
+                  </Button>
+                  ):(
+                  <Button type='button'
+                  variant='outline-primary'
+                  data-te-ripple-init
+                  data-te-ripple-color="light"
+                  title={`follow ${post.author.username}`}
+                  onClick={() => handleToggleFollow(post.author.id)}
+                  >
+                    Follow
+                  </Button>
+                  ))}
                   <span className='font-xs font-mono font-extralight ml-2 text-sm text-gray-400'> {post.created_time} ago</span>
                 
                 
@@ -240,4 +266,4 @@ const HomePage = () => {
   );
 }
 
-export default HomePage;
+export default HomePage

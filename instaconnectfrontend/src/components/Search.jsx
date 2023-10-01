@@ -1,19 +1,60 @@
 import React, { useState } from 'react';
-import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import SearchApi from '../api/SearchApi';
 import {MDBTable, MDBTableBody } from 'mdb-react-ui-kit';
 import { BASE_URL } from '../utils/constants';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import { NavLink } from 'react-router-dom';
 import PostDetailModal from './PostDetailModal';
+
+const GlobalStyle = createGlobalStyle`
+  .scrollbar {
+    margin-left: 30px;
+    float: left;
+    height: 20px;
+    width: 65px;
+    background: #fff;
+    overflow-y: scroll;
+    margin-bottom: 25px;
+  }
+  
+  .scrollbar-ripe-malinka {
+    scrollbar-color: #f5576c #f5f5f5;
+  }
+  
+  .scrollbar-ripe-malinka::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+    background-color: #f5f5f5;
+    border-radius: 10px;
+  }
+  
+  .scrollbar-ripe-malinka::-webkit-scrollbar {
+    width: 6px;
+    background-color: #f5f5f5;
+  }
+  
+  .scrollbar-ripe-malinka::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+    background-image: -webkit-linear-gradient(330deg, #f093fb 0%, #f5576c 100%);
+    background-image: linear-gradient(120deg, #f093fb 0%, #f5576c 100%);
+  }
+`;
 
 const CenteredTable = styled(MDBTable)`
   width: 80%;
   margin: 0 auto;
   margin-top:30px;
 `;
+
+const modalBodyStyle = {
+  maxHeight: '650px',
+};
+
+const contentStyle = {
+  maxHeight: '450px',
+};
 
 const StyledTableRow = styled.tr`
   border-width:0px;
@@ -29,26 +70,26 @@ const StyledTableRow = styled.tr`
 `;
 const Search = ({ isVisible, onClose }) => {
 
-  const buttonStyle = {
-    background:
-      'radial-gradient(circle farthest-corner at 35% 90%, #fec564, transparent 50%), ' +
-      'radial-gradient(circle farthest-corner at 0 140%, #fec564, transparent 50%), ' +
-      'radial-gradient(ellipse farthest-corner at 0 -25%, #5258cf, transparent 50%), ' +
-      'radial-gradient(ellipse farthest-corner at 20% -50%, #5258cf, transparent 50%), ' +
-      'radial-gradient(ellipse farthest-corner at 100% 0, #893dc2, transparent 50%), ' +
-      'radial-gradient(ellipse farthest-corner at 60% -20%, #893dc2, transparent 50%), ' +
-      'radial-gradient(ellipse farthest-corner at 100% 100%, #d9317a, transparent), ' +
-      'linear-gradient(#6559ca, #bc318f 30%, #e33f5f 50%, #f77638 70%, #fec66d 100%)',
-  };
-
   const [inputValue, setInputValue] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [searchData , setSearchData] = useState([])
   const [postId,setPostId] =useState(null)
   const [showPostDetailModal,setShowPostDetailModal] = useState(false)
 
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
+  const handleInputChange = async (e) => {
+    const value = e.target.value
+    setInputValue(value);
+
+    try {
+      const data = await SearchApi(value)
+      setSearchData(data)
+      const usersData = data?.user_data?.users
+      const postsData = data?.post_data?.posts
+      console.log('users:',usersData)
+      console.log('posts:',postsData)
+    } catch (error){
+      console.error(error)
+    }
   };
 
   const handleInputFocus = () => {
@@ -63,20 +104,6 @@ const Search = ({ isVisible, onClose }) => {
     onClose();
   };
 
-  const handleSubmit = async (e) =>{
-    e.preventDefault();
-    try {
-      const data = await SearchApi(inputValue)
-      setSearchData(data)
-      const usersData = data?.user_data?.users;
-      const postsData = data?.post_data?.posts;
-      console.log('users:',usersData)
-      console.log('posts:',postsData)
-    } catch(error) {
-      console.error(error)
-    }
-  }
-
   const handleViewPost = (postId) =>{
     setPostId(postId)
     setShowPostDetailModal(true)
@@ -84,11 +111,12 @@ const Search = ({ isVisible, onClose }) => {
 
   return (
     <div>
+      <GlobalStyle />
       <Modal show={isVisible} onHide={handleModalClose}>
         <Modal.Header closeButton>
           <Modal.Title>Search</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body style={modalBodyStyle}>
         <PostDetailModal isVisible={showPostDetailModal} onClose={() =>setShowPostDetailModal(false)} postID={postId}/>
           <Form>
             <Form.Group className={`mb-3 ${isFocused ? 'focused' : ''}`} controlId="exampleForm.ControlInput1">
@@ -110,6 +138,7 @@ const Search = ({ isVisible, onClose }) => {
             </Form.Group>
           </Form>
           {searchData ? 
+          <div className="overflow-auto scrollbar-ripe-malinka" style={contentStyle}>
             <CenteredTable>
               <MDBTable align='middle' style={{ borderWidth: '0px',marginTop:'-10px' }}>
                 <MDBTableBody>
@@ -163,13 +192,12 @@ const Search = ({ isVisible, onClose }) => {
                   
                 </MDBTableBody>
               </MDBTable>
-            </CenteredTable>:''
+            </CenteredTable>
+          </div>:''
+          
       }
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleSubmit} style={buttonStyle}>
-            Search
-          </Button>
         </Modal.Footer>
       </Modal>
     </div>

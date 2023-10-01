@@ -6,6 +6,7 @@ from .models import *
 from users.models import UserAccount
 from django.db.models import Q
 from operator import attrgetter
+from .signals import follow_notification
 # Create your views here.
 
 
@@ -203,7 +204,7 @@ class SearchViewSet(APIView):
                 user_results= UserAccount.objects.filter(
                     models.Q(username__icontains=query) |
                     models.Q(first_name__icontains=query) |
-                    models.Q(last_name__icontains=query),is_active=True
+                    models.Q(last_name__icontains=query),is_active=True,is_superuser=False
                 )
 
                 post_results = Posts.objects.filter(
@@ -242,12 +243,13 @@ class FollowUserView(APIView):
             if is_following:
                 is_following.delete()
                 response_msg = 'Unfollowed Successfully'
-                # return Response('Unfollowed Successfully',status=status.HTTP_200_OK)
             else:
                 new_follow = Follow(follower=user,following=follows)
                 new_follow.save()
                 response_msg = 'Followed Successfully'
-                # return Response('followed Successfully',status=status.HTTP_200_OK)
+                follow_notification.send(sender=self.__class__,follower=user,following=follows)
+                print('signal sent successfully')
+
             is_following_now = Follow.objects.filter(follower = user , following = follows)
 
             is_following_data = [
