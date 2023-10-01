@@ -1,19 +1,19 @@
-import React, { useState } from 'react'
-import { useDispatch,useSelector } from 'react-redux'
-import {toast} from 'react-toastify'
-import {Link,Navigate} from 'react-router-dom'
-import {register} from '../redux/slice'
+import React, { useEffect, useState } from "react";
+import { useDispatch,useSelector } from "react-redux";
+import { useNavigate,useParams } from "react-router-dom";
 import appStores from '../images/appstore.png'
 import loginImage1 from '../images/network.jpg'
 import '../assets/css/fonts.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Loading from "../components/Loading";
+import { BASE_URL } from "../utils/constants";
+import { toast } from "react-toastify";
+import axios from "axios";
 
+const ChangePassword = () => {
 
-
-const RegisterPage = () => {
-
-    const [generalErrorMessage, setGeneralErrorMessage] = useState('');
-
+    const [error , setError] =useState('')
+    const navigate = useNavigate()
     const buttonStyle = {
         background:
           'radial-gradient(circle farthest-corner at 35% 90%, #fec564, transparent 50%), ' +
@@ -29,40 +29,46 @@ const RegisterPage = () => {
     const dispatch = useDispatch()
     const {registered,loading} =useSelector(state => state.user)
     const [formData,setFormData] = useState({
-        username:'',
-        email:'',
         password:'',
         password1:''
     })
-    const {email,username,password,password1} = formData
+    const {password,password1} = formData
+
+    const {userId} = useParams()
 
     const onchange = (e) =>{
         setFormData({ ...formData, [e.target.name] : e.target.value})
     }
 
-    const userRegister = async(e) =>{
+    const handleSubmit = async(e) =>{
         e.preventDefault()
-        if(password===password1){
-            dispatch(register({username,email,password}))
-            .unwrap()
-            .then((data) =>{
-              console.log('regestration successfull')
-            })
-            .catch((error) =>{
-              if (error.response && error.response.data) {
-                const responseErrors = error.response.data
-                setGeneralErrorMessage(responseErrors[Object.keys(responseErrors)[0]][0]);
-              } else {
-                toast.error('An error occured during registration.')
-                console.error('unhandled error:',error)
-              }
-            })
-        }else{
-            toast.error("Password mis-match")
+        try {
+            if(password===password1){
+                console.log('the user id is:',userId)
+                const response = await axios.post(`${BASE_URL}/change-password/${userId}/`,formData,{
+                    headers:{
+                        'Accept':'application/json',
+                        'Content-Type':'application/json',
+                    },
+                })
+
+                if(response.status === 200){
+                    console.log('Password change successfully')
+                    navigate('/')
+                } else {
+                    console.error('Error occured',response.data)
+                    setError(response.data.message)
+                }
+            }else{
+                toast.error("Password mis-match")
+            }
+        } catch (error) {
+            console.error('Error occurred', error);
+            setError('Error occurred while Changing password');
         }
+        
     }
 
-    if(registered) return <Navigate to='/' />
   return (
     <div className="container">
       <div className="row mt-5">
@@ -73,39 +79,12 @@ const RegisterPage = () => {
         
         <div className="col-md-6 mt-5">
           <div className="d-flex flex-column align-items-center justify-content-center">
-          {generalErrorMessage && (
-              <div className="alert alert-danger">{generalErrorMessage}</div>
-            )}
-            <form onSubmit={userRegister} className="mt-4 " style={{width:'60%'}}>
-              <div className="mb-3">
-                <input
-                  id="email"
-                  name="email"
-                  placeholder="Email"
-                  type="email"
-                  value={email}
-                  onChange={onchange}
-                  className='form-control'
-                  required
-                />
-              </div>
-              <div className="mb-3">
-                <input
-                  id="username"
-                  name="username"
-                  placeholder="Username"
-                  type="text"
-                  value={username}
-                  onChange={onchange}
-                  className='form-control'
-                  required
-                />
-              </div>
+            <form onSubmit={handleSubmit} className="mt-4 " style={{width:'60%'}}>
               <div className="mb-3">
                 <input
                   id="password"
                   name="password"
-                  placeholder="Password"
+                  placeholder="New Password"
                   type="password"
                   value={password}
                   onChange={onchange}
@@ -117,7 +96,7 @@ const RegisterPage = () => {
                 <input
                   id="password1"
                   name="password1"
-                  placeholder="Confirm Password"
+                  placeholder="Confirm New Password"
                   type="password"
                   value={password1}
                   onChange={onchange}
@@ -126,16 +105,9 @@ const RegisterPage = () => {
                 />
               </div>
               <button type="submit" className="btn btn-secondary " style={buttonStyle}>
-                Sign up
+                Submit
               </button>
             </form>
-            <div className="mt-4">
-              Already have an account?
-              <Link to="/" className='font-semibold leading-6 ml-2 text-indigo-600 hover:text-indigo-500 text-decoration-none'>
-                {' '}
-                Login
-              </Link>
-            </div>
             <div className="mt-4">
               <p>Get the app.</p>
               <img
@@ -151,4 +123,4 @@ const RegisterPage = () => {
   );
 }
 
-export default RegisterPage
+export default ChangePassword

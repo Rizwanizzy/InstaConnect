@@ -13,8 +13,10 @@ import AdminDashboard from './pages/AdminDashboard';
 import UsersList from './pages/UsersList';
 import ReportedPostsList from './pages/ReportedPostsList';
 import PostsLists from './pages/PostsLists';
+import ForgotPassword from './pages/ForgotPassword';
+import ChangePassword from './pages/ChangePassword';
 import ExplorePage from './pages/ExplorePage';
-
+import { ToastContainer } from 'react-toastify';
 
 function App() {
 
@@ -25,9 +27,12 @@ function App() {
   },[dispatch])
   
   return (
+    <>
       <Router>
         <Routes>
           <Route path='/' element={<LoginPage/>}/>
+          <Route path='/forgot-password' element={<ForgotPassword/>}/>
+          <Route path='/change-password/:userId' element={<ChangePassword/>}/>
           <Route path='/admin-login' element={<AdminLogin/>}/>
           <Route path='/register' element={<RegisterPage/>}/>
           <Route path='/home' element={<HomePage/>}/>
@@ -41,6 +46,8 @@ function App() {
           <Route path='/reported-posts' element={<ReportedPostsList />} />
         </Routes>
       </Router>
+      <ToastContainer />
+    </>
   );
 }
 

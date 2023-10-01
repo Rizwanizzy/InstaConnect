@@ -6,11 +6,13 @@ from rest_framework.decorators import api_view
 
 from rest_framework.views import APIView
 from rest_framework import permissions,status,generics
-
+from django.conf import settings
 from .serializer import UserSerializer,UserCreateSerializer
 from .models import UserAccount
 from post.models import *
 from post.serializer import *
+import json
+from django.core.mail import send_mail
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -53,6 +55,57 @@ class RegisterUser(APIView):
         user = serializer.create(serializer.validated_data)
         user = UserSerializer(user)
         return Response(user.data,status=status.HTTP_201_CREATED)
+    
+
+class ForgotPasswordView(APIView):
+    def post(self, request):
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            email = data.get('email')
+            print('Password reset email is:', email)
+            user_account = UserAccount.objects.filter(email=email).first()
+            if user_account:
+                reset_link = f"http://localhost:3000/change-password/{user_account.id}"
+                subject = 'Password Reset Link'
+                message = f'''Hello,\n\nYou have requested to reset your password. 
+                            Click the following link to reset your password:\n\n
+                            {reset_link}\n\nIf you did not request this, please ignore this email.\n\nThanks!'''
+                
+                from_email = settings.EMAIL_HOST_USER
+                recipient_list = [email]
+                
+                # Send the email
+                send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+                
+                return Response({'message': 'Email sent successfully'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'message': 'Invalid Email'}, status=status.HTTP_404_NOT_FOUND)
+
+        except json.JSONDecodeError:
+            return Response({'error': 'Invalid JSON data in the request body'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class ChangePasswordView(APIView):
+    def post(self,request,id):
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            password = data.get('password')
+            password1 = data.get('password1')
+            print('Password is:', password,'password1 is:',password1)
+            user_account = UserAccount.objects.get(id=id)
+            if user_account:
+                user_account.set_password(password)
+                user_account.save()
+                return Response({'message': 'Password Has been changed'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'message': 'No Such User is available'}, status=status.HTTP_404_NOT_FOUND)
+
+        except json.JSONDecodeError:
+            return Response({'error': 'Invalid JSON data in the request body'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
     
 class RetrieveUserView(APIView):
     permission_classes = [permissions.IsAuthenticated]

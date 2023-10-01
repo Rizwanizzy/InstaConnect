@@ -222,7 +222,6 @@ class SearchViewSet(APIView):
                     'user_data':user_data,
                     'post_data':post_data
                 }
-                print('search results',response_data)
                 return Response(response_data,status=status.HTTP_200_OK)
             else:
                 print('no user accoding to the search query')

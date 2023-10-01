@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch,useSelector } from "react-redux";
-import { Link,useNavigate } from "react-router-dom";
-import { resetRegistered,login } from "../redux/slice";
+import { useNavigate } from "react-router-dom";
 import appStores from '../images/appstore.png'
 import loginImage1 from '../images/network.jpg'
 import '../assets/css/fonts.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Loading from "../components/Loading";
+import { BASE_URL } from "../utils/constants";
 
-const LoginPage = () => {
+const ForgotPassword = () => {
 
     const [error , setError] =useState('')
+    const [successMessage , setSuccessMessage] = useState('')
 
     const buttonStyle = {
         background:
@@ -24,28 +25,12 @@ const LoginPage = () => {
           'linear-gradient(#6559ca, #bc318f 30%, #e33f5f 50%, #f77638 70%, #fec66d 100%)',
       };
 
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
     const {loading,isAuthenticated,registered} = useSelector(state => state.user)
     const [formData,setFormData] = useState({
         email:'',
-        password:''
     })
 
-    useEffect(() =>{
-        if(registered) dispatch(resetRegistered())
-    },[registered,dispatch])
-
-
-    useEffect(() =>{
-        if(isAuthenticated) {
-            navigate('/home')
-        } else {
-            navigate('/')
-        }
-    },[isAuthenticated,navigate])
-
-    const {email,password} = formData
+    const {email} = formData
 
     const onChange = e =>{
         setFormData({...formData , [e.target.name]:e.target.value})
@@ -53,17 +38,35 @@ const LoginPage = () => {
 
     
 
-    const handleLogin = async (e) =>{
-        e.preventDefault()
-        dispatch(login({email,password}))
-        .unwrap()
-        .then((data) =>{
-            console.log('login successfully')
-        })
-        .catch((error) =>{
-            setError('Invalid username or password')
-        })
-    }
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+          const response = await fetch(`${BASE_URL}/forgot-password/`, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email }),
+          });
+      
+          const data = await response.json();
+      
+          if (response.status === 200) {
+            console.log('Email sent successfully');
+            setSuccessMessage('Email sent successfully');
+            setError('');
+          } else {
+            console.error('Error occurred', data);
+            setError(data.message);
+            setSuccessMessage('');
+          }
+        } catch (error) {
+            console.error('Error occurred', error);
+            setError('Error occurred while sending email');
+            setSuccessMessage(''); 
+        }
+    };
 
   return (
     <div className="container">
@@ -78,8 +81,9 @@ const LoginPage = () => {
         <div className="col-md-6 mt-5">
             <div className="d-flex flex-column align-items-center justify-content-center">
 
-                <form onSubmit={handleLogin} className="mt-4 " style={{width:'60%'}}>
+                <form onSubmit={handleSubmit} className="mt-4 " style={{width:'60%'}}>
                     <div className="mb-3">
+                    <h6>Enter you Email Here..</h6>
                     <input
                         type="email"
                         id="email"
@@ -90,33 +94,13 @@ const LoginPage = () => {
                         placeholder="Email"
                         required
                     />
-                    <div className="text-sm mt-3 mb-3 float-right">
-                        <Link
-                        to={'/forgot-password'}
-                        className="font-semibold text-indigo-600 hover:text-indigo-500 text-decoration-none"
-                        >
-                        Forgot password?
-                        </Link>
                     </div>
-                    </div>
-                    <div className="mb-3">
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        value={password}
-                        onChange={onChange}
-                        className="form-control"
-                        placeholder="Password"
-                        required
-                    />
-                    </div>
-                    <button type="submit" className="btn btn-secondary" style={buttonStyle}>Log In</button>
+                    
+                    <button type="submit" className="btn btn-secondary" style={buttonStyle}>Send</button>
                     {error && <p className="text-danger mt-2">{error}</p>}
+                    {successMessage && <p className="text-success mt-2">{successMessage}</p>}
                 </form>
-                <p className="mt-3 text-center text-sm text-gray-500">Don't have an account? <Link to={'/register'} className="font-semibold leading-6 ml-2 text-indigo-600 hover:text-indigo-500 text-decoration-none">Sign up</Link></p>
-                <p className="mt-1">Are you Superuser? <Link to={"/admin-login"} className="font-semibold leading-6 ml-2 text-indigo-600 hover:text-indigo-500 text-decoration-none">Login Here</Link></p>
-                <div className="mt-4">
+                   <div className="mt-4">
                     <p>Get the app.</p>
                     <img src={appStores} alt="Get the app" className="img-fluid" style={{ width: '300px' }} />
                 </div>
@@ -129,4 +113,4 @@ const LoginPage = () => {
   );
 }
 
-export default LoginPage
+export default ForgotPassword
