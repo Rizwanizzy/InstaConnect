@@ -1,9 +1,12 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {BsFillBellFill,BsFillEnvelopeFill,BsPersonCircle,BsSearch,BsJustify} from 'react-icons/bs'
 import {BsPeopleFill,BsListCheck,BsMenuButtonWideFill } from 'react-icons/bs'
 import { BarChart, Bar,LineChart,Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import AdminNavBar from '../components/AdminNavBar';
 import styled from 'styled-components';
+import userListApi from '../api/userListApi';
+import postsListApi from '../api/postsListApi';
+import reportedPostsListApi from '../api/reportedPostsListApi';
 
 export const Body = styled.div`
   margin: 0;
@@ -77,7 +80,7 @@ export const MainCards = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;
-  margin: 15px 0;
+  margin: 35px 0px 55px 0;
 `;
 
 export const Card = styled.div`
@@ -114,7 +117,7 @@ export const Charts = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
-  margin-top: 60px;
+  margin-top: 90px;
   height: 300px;
 `;
 
@@ -165,6 +168,41 @@ export const BodyExtraSmall = styled(BodySmall)`
 
 
 const AdminDashboard = () => {
+    const [totalUsers,setTotalUsers] = useState(0)
+    const [totalPosts,setTotalPosts] = useState(0)
+    const [totalReportedPosts,setTotalReportedPosts] = useState(0)
+    const [chartData, setChartData] = useState([]);
+
+    useEffect(() => {
+      const fetchDetails = async () => {
+        try {
+          const users = await userListApi();
+          const posts = await postsListApi();
+          const reportedPosts = await reportedPostsListApi();
+          
+          setTotalUsers(users);
+          setTotalPosts(posts);
+          setTotalReportedPosts(reportedPosts);
+
+          setChartData([
+            { name: 'Total Users', value: users.length },
+            { name: 'Total Posts', value: posts.length },
+            { name: 'Total Reported Posts', value: reportedPosts.length },
+          ]);
+
+        } catch (error) {
+          console.error(error);
+        }
+      };
+    
+      fetchDetails()
+        .then(() => {
+          // Now you can log the updated values
+          console.log('totalUsers:', totalUsers);
+          console.log('totalposts:', totalPosts);
+          console.log('totalReportedPosts:', totalReportedPosts);
+        });
+    }, []);
 
     const data = [
         {
@@ -240,7 +278,7 @@ const AdminDashboard = () => {
                   <BsListCheck className='card_icon' />
                 </CardIcon>
               </CardInner>
-              <h1>300</h1>
+              <h1>{totalPosts.length}</h1>
             </FirstCard>
             <SecondCard className="card">
               <CardInner className="card-inner">
@@ -249,7 +287,7 @@ const AdminDashboard = () => {
                   <BsPeopleFill className='card_icon' />
                 </CardIcon>
               </CardInner>
-              <h1>70</h1>
+              <h1>{totalUsers.length}</h1>
             </SecondCard>
             <ThirdCard className="card">
               <CardInner className="card-inner">
@@ -258,7 +296,7 @@ const AdminDashboard = () => {
                   <BsMenuButtonWideFill className='card_icon' />
                 </CardIcon>
               </CardInner>
-              <h1>15</h1>
+              <h1>{totalReportedPosts.length}</h1>
             </ThirdCard>
           </MainCards>
           <Charts className="charts">
@@ -266,7 +304,7 @@ const AdminDashboard = () => {
               <BarChart
                 width={500}
                 height={300}
-                data={data}
+                data={chartData}
                 margin={{
                   top: 5,
                   right: 30,
@@ -279,8 +317,8 @@ const AdminDashboard = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="pv" fill="#8884d8" />
-                <Bar dataKey="uv" fill="#82ca9d" />
+                <Bar dataKey="value" fill="#8884d8" />
+                {/* <Bar dataKey="uv" fill="#82ca9d" /> */}
                 </BarChart>
             </ResponsiveContainer>
 
@@ -288,7 +326,7 @@ const AdminDashboard = () => {
               <LineChart
                 width={500}
                 height={300}
-                data={data}
+                data={chartData}
                 margin={{
                   top: 5,
                   right: 30,
@@ -301,8 +339,8 @@ const AdminDashboard = () => {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
-            <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+            <Line type="monotone" dataKey="value" stroke="#8884d8" activeDot={{ r: 8 }} />
+            {/* <Line type="monotone" dataKey="uv" stroke="#82ca9d" /> */}
             </LineChart>
             </ResponsiveContainer>
           </Charts>

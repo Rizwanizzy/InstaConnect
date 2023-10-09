@@ -108,11 +108,6 @@ const AdminNavBar = () => {
           <Icon ><BsMenuButtonWideFill className='icon'/></Icon>Reports
           </SidebarLink>
         </SidebarListItem>
-        <SidebarListItem>
-          <SidebarLink to="">
-          <Icon ><BsFillGearFill className='icon'/></Icon>Settings
-          </SidebarLink>
-        </SidebarListItem>
         <LogoutButton onClick={handleLogout}>
           <SidebarListItem>
           <Icon ><BsBoxArrowRight className='icon' /></Icon> Logout

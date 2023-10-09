@@ -34,7 +34,7 @@ const PostModal = ({ isVisible, onClose, postID, initialCaption, initialImage })
       try {
         onClose();
         await UpdatePostApi(postID, caption, postImage);
-        toast.success('Post updated successfully', {
+          toast.success('Post updated successfully', {
           position: 'top-center',
         });
         setCaption('');
@@ -61,7 +61,7 @@ const PostModal = ({ isVisible, onClose, postID, initialCaption, initialImage })
 
   return (
     <div
-      className="z-10 fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center"
+      className="z-50 fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center"
       id="wrapper"
       onClick={handleClose}
     >

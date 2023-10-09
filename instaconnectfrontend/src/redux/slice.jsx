@@ -304,6 +304,7 @@ const userSlice = createSlice({
     }
 })
 
+
 export const {resetRegistered} = userSlice.actions;
 
 export default  userSlice.reducer

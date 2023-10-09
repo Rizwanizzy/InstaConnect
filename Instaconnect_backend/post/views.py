@@ -7,6 +7,7 @@ from users.models import UserAccount
 from django.db.models import Q
 from operator import attrgetter
 from .signals import follow_notification
+from django.shortcuts import get_object_or_404
 # Create your views here.
 
 
@@ -50,7 +51,14 @@ class CreatePostView(APIView):
             body = request.data['body']
             serializer = self.serializer_class(data=request.data)
             if serializer.is_valid():
-                serializer.save(author=user,img=img,body=body)
+                post = serializer.save(author=user,img=img,body=body)
+                for follower in user.followers.all():
+                    Notification.objects.create(
+                        from_user = user,
+                        to_user = follower.follower,
+                        post = post,
+                        notification_type = Notification.NOTIFICATION_TYPES[1][0],
+                    )
                 return Response(status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors,status=status.HTTP_406_NOT_ACCEPTABLE)
@@ -126,12 +134,20 @@ class LikeView(APIView):
 
     def post(self,request,pk):
         try:
+            user = request.user
             post = Posts.objects.get(pk=pk)
             if request.user in post.likes.all():
                 post.likes.remove(request.user)
                 return Response('Post unliked ', status=status.HTTP_200_OK)
             else:
                 post.likes.add(request.user)
+                if not post.author == user:
+                    Notification.objects.create(
+                        from_user = user,
+                        to_user = post.author,
+                        post = post ,
+                        notification_type = Notification.NOTIFICATION_TYPES[0][0],
+                    )
                 return Response('Post Liked.',status=status.HTTP_200_OK)
 
         except Posts.DoesNotExist:
@@ -149,10 +165,17 @@ class CreateComment(APIView):
     def post(self, request, pk , *args,**kwargs):
         try:
             user = request.user
+            post = Posts.objects.get(id=pk)
             body = request.data['body']
             serializer = self.serializer_class(data=request.data)
             if serializer.is_valid():
                 serializer.save(user=user,post_id=pk,body=body)
+                Notification.objects.create(
+                    from_user = user,
+                    to_user = post.author,
+                    post = post ,
+                    notification_type = Notification.NOTIFICATION_TYPES[3][0],
+                )
                 return Response(status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors,status=status.HTTP_406_NOT_ACCEPTABLE)
@@ -191,6 +214,22 @@ class ProfileView(APIView):
             return Response(context,status=status.HTTP_200_OK)
         except UserAccount.DoesNotExist:
             return Response("User Not Fount",status=status.HTTP_404_NOT_FOUND)
+
+
+class MyNetworkView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self,request):
+        current_user = self.request.user
+        followers_query = UserAccount.objects.filter(Q(followers_following=current_user) & ~Q(id=current_user.id))
+        following_query = UserAccount.objects.filter(Q(following_follower=current_user) & ~Q(id=current_user.id))
+        followers = UserSerializer(following_query, many = True)
+        following = UserSerializer(followers_query,many=True)
+        context={
+            'followers':followers.data,
+            'following':following.data
+        }
+        return Response(context,status=status.HTTP_200_OK)
         
 #==================================SEARCH USERS==================================================
 
@@ -245,6 +284,11 @@ class FollowUserView(APIView):
             else:
                 new_follow = Follow(follower=user,following=follows)
                 new_follow.save()
+                Notification.objects.create(
+                    from_user = user,
+                    to_user = follows,
+                    notification_type = Notification.NOTIFICATION_TYPES[2][0],
+                )
                 response_msg = 'Followed Successfully'
                 follow_notification.send(sender=self.__class__,follower=user,following=follows)
                 print('signal sent successfully')
@@ -269,3 +313,38 @@ class FollowUserView(APIView):
             return Response('User not found',status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response(str(e),status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# ================================ NOTIFICATION ===================================
+
+class NotificationsView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = NotificationSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Notification.objects.filter(to_user=user).exclude(is_seen=True).order_by('-created')
+
+    def get(self,request , *args, **kwargs):
+        try:
+            queryset = self.get_queryset()
+            serializer = self.get_serializer(queryset, many = True)
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class NotificationsSeenView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = NotificationSerializer
+
+    def post(self, request , pk ,*args, **kwargs):
+        try:
+            notification = get_object_or_404(Notification,pk=pk)
+            notification.is_seen = True
+            notification.save()
+            return Response(status=status.HTTP_200_OK)
+        except Notification.DoesNotExist:
+            return Response("Not found in database",status=status.HTTP_404_NOT_FOUND)
+        
+    def get(self, request , pk , *args, **kwargs):
+        return Response('GET method not allowed for the endpoint ', status=status.HTTP_405_METHOD_NOT_ALLOWED)

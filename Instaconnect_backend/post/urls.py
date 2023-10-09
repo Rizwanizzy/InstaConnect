@@ -19,6 +19,10 @@ urlpatterns = [
 
     path('search-request/',SearchViewSet.as_view(),name='search-request'),
     path('follow-user/<int:pk>/',FollowUserView.as_view(),name='follow'),
+    path('network/',MyNetworkView.as_view(),name='network'),
+    
+    path('notifications/',NotificationsView.as_view(),name='notifications'),
+    path('notifications-seen/<int:pk>/',NotificationsSeenView.as_view(),name='notifications-seen'),
 
 ]
 

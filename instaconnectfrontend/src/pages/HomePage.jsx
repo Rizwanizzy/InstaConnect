@@ -19,6 +19,7 @@ import ShareIcon from '@mui/icons-material/Share';
 import reportPostApi from '../api/reportPostApi';
 import Button from 'react-bootstrap/Button';
 import followUserApi from '../api/followUserApi';
+import createChatRoomApi from '../api/createChatRoomApi';
 
 
 const PageContainer = styled.div`
@@ -63,14 +64,15 @@ const HomePage = () => {
       }
     }
 
-    if (user) {
+    if (user && !loading) {
       fetchData()
     }
-  }, [user,showPostModal,showPostDetailModal])
+  }, [user,showPostModal,showPostDetailModal,loading])
 
   const fetchData = async () =>{
     try {
       const data =await postListApi()
+      setPosts([])
       setPosts(data)
     } catch (error) {
       console.error(error)
@@ -128,6 +130,7 @@ const HomePage = () => {
   const handleToggleFollow = async (userId) =>{
     try {
         await followUserApi(userId,fetchData)
+        await createChatRoomApi(userId)
     } catch (error) {
         toast.error('Cannot follow user',{
             position:'top-center'
@@ -164,7 +167,7 @@ const HomePage = () => {
         {posts ? posts.map((post)=>(
         <div key={post.id} className="block rounded-lg w-11/12 lg:w-4/6 min-w-min mx-auto mt-3 gap-4 p-2 text-[#252525] shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] bg-white">
           <div
-            className="relative overflow-hidden bg-cover bg-no-repeat"
+            className="overflow-hidden bg-cover bg-no-repeat"
             data-te-ripple-init
             data-te-ripple-color="light"
           >

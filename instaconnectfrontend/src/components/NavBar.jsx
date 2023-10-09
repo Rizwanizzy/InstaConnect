@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 // import './NavBar.css'
 import HomeIcon from '@mui/icons-material/Home';
 import SearchIcon from '@mui/icons-material/Search';
@@ -16,6 +16,8 @@ import PostModal from './PostModal';
 import Search from './Search';
 import { BASE_URL } from '../utils/constants';
 import DisplayPicture from '../images/Default-Profile-Picture1.png'
+import Notifications from './Notifications';
+import getNotificationApi from '../api/getNotificationsApi';
 
 const NavBarWrapper = styled.nav`
   position: fixed;
@@ -123,11 +125,54 @@ const NavBar = () => {
     const navigate = useNavigate()
     const [show,setShow] = useState(false)
     const [showSearch , setShowSearch] = useState(false)
+    const [showNotifications , setShowNotifications] = useState(false)
+    const [notification , setNotification] = useState([])
 
-    const {user,isAuthenticated} = useSelector(state => state.user)
+    const {user,isAuthenticated , loading} = useSelector(state => state.user)
     const dispatch = useDispatch()
 
     const email = isAuthenticated ? user?.email:''
+
+    useEffect(() => {
+      const fetchData = async () =>{
+        try {
+          const data = await getNotificationApi()
+          setNotification(data)
+        } catch (error) {
+          console.error(error)
+        }
+      }
+      if (user && !loading) {
+        fetchData()
+      }
+    },[user,loading])
+
+    useEffect(() =>{
+      if (user) {
+        const accessToken = localStorage.getItem('access_token')
+        const websocketProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+        const socket = new WebSocket(`${websocketProtocol}127.0.0.1:8000/ws/notification/?token=${accessToken}`);
+
+        socket.onopen = () => {
+          console.log('websocket connection established')
+        }
+
+        socket.onmessage = (event) => {
+          const newNotification = JSON.parse(event.data)
+          console.log(newNotification)
+          if (newNotification.type === 'notification' ) {
+            setNotification((prevNotifications) => [...prevNotifications,newNotification.payload])
+          }
+        }
+
+        socket.onclose = (event) => {
+          console.log('Websocket connection closed' , event)
+        }
+        return () =>{
+          socket.close()
+        }
+      }
+    },[user])
 
     const handleLogout = () =>{
         dispatch(logout())
@@ -150,6 +195,14 @@ const NavBar = () => {
       setShowSearch(false)
     }
 
+    const removeNotification = (notificationIdToRemove) => {
+      setNotification((prevNotifications) =>
+        prevNotifications.filter(
+          (notification) => notification.id !== notificationIdToRemove
+        )
+      )
+    }
+
   return (
     <NavBarWrapper>
       <Logo to='/'>Instaconnect</Logo>
@@ -166,13 +219,23 @@ const NavBar = () => {
           <ExploreIcon />
           <span>Explore</span>
         </NavButton>
-        <NavButton to="#">
+        <NavButton to="/messages">
           <ChatIcon />
           <span>Messages</span>
         </NavButton>
-        <NavButton to="#">
+        <NavButton onClick={() =>setShowNotifications(true)}>
           <FavoriteIcon />
           <span>Notification</span>
+          <span
+            className={`text-xs ml-2 text-blue-700 align-top${
+              notification?.length === 0
+                ? ""
+                : "border border-black align-top rounded-full"
+            }`}
+          >
+            {" "}
+            {notification?.length === 0 ? "" : notification?.length}{" "}
+          </span>
         </NavButton>
         <NavButton onClick={createPost}>
           <AddCircleIcon />
@@ -191,6 +254,7 @@ const NavBar = () => {
       </ButtonContainer>
       <PostModal isVisible={show} onClose={() => setShow(false)} />
       <Search isVisible={showSearch} onClose={closeSearch} />
+      <Notifications isVisible={showNotifications} onClose={()=>setShowNotifications(false)} notification={notification} removeNotification={removeNotification}/>
     </NavBarWrapper>
     
   )

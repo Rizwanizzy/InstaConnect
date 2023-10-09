@@ -5,3 +5,4 @@ from .models import *
 admin.site.register(Posts)
 admin.site.register(Comment)
 admin.site.register(Follow)
+admin.site.register(Notification)

@@ -147,7 +147,6 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
     <div
       className="z-10 fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center "
       id="wrapper"
-      onClick={handleClose}
     >
       <div className="m-2 w-3/5 flex flex-col p-2 rounded">
         <button className="text-white text-xl place-self-end" onClick={onClose}>

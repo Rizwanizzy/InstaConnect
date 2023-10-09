@@ -194,6 +194,7 @@ const ProfilePage = () => {
   const handleViewPost = (postId) =>{
     setPostId(postId)
     setShowPostDetailModal(true)
+    console.log('POstid',postId)
   }
 
   const handleToggleFollow = (userId) =>{

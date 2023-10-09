@@ -181,12 +181,25 @@ class BlockPost(APIView):
 
     def get(self,request,id):
         try:
+            user = request.user
             post = Posts.objects.get(id=id)
             print('post is ',post)
             if post.is_blocked:
                 post.is_blocked=False
+                Notification.objects.create(
+                    from_user=user,
+                    to_user = post.author,
+                    post = post,
+                    notification_type = Notification.NOTIFICATION_TYPES[5][0],
+                )
             else:
                 post.is_blocked=True
+                Notification.objects.create(
+                    from_user=user,
+                    to_user = post.author,
+                    post = post,
+                    notification_type = Notification.NOTIFICATION_TYPES[4][0],
+                )
             post.save()
             return Response(status=status.HTTP_200_OK)
         except Posts.DoesNotExist:

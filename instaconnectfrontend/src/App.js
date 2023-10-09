@@ -17,6 +17,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import ChangePassword from './pages/ChangePassword';
 import ExplorePage from './pages/ExplorePage';
 import { ToastContainer } from 'react-toastify';
+import Messages from './pages/Messages';
 
 function App() {
 
@@ -37,6 +38,7 @@ function App() {
           <Route path='/register' element={<RegisterPage/>}/>
           <Route path='/home' element={<HomePage/>}/>
           <Route path='/explore' element={<ExplorePage/>}/>
+          <Route path='/messages' element={<Messages/>}/>
           <Route path='/profile/:email' element={<ProfilePage />}/>
 
           <Route path='/admin-dashboard' element={<AdminDashboard />} />

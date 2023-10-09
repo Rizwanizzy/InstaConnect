@@ -21,17 +21,21 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
+
     'users',
     'post',
+    'chat',
 ]
 
 REST_FRAMEWORK = {
@@ -69,7 +73,21 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Instaconnect_backend.wsgi.application'
+
+# WSGI_APPLICATION = 'backend.wsgi.application'
+
+ASGI_APPLICATION = 'Instaconnect_backend.asgi.application'
+
+
+CHANNEL_LAYERS ={
+    'default':{
+        'BACKEND':'channels_redis.core.RedisChannelLayer',
+        'CONFIG':{
+            'hosts':[('127.0.0.1',6379)],
+        },
+    },
+}
+
 
 
 # Database
