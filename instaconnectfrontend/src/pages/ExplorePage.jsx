@@ -9,6 +9,7 @@ import followUserApi from '../api/followUserApi'
 import { Navigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { BASE_URL } from '../utils/constants'
+import createChatRoomApi from '../api/createChatRoomApi'
 import DropdownOptions from '../components/DropdownOptions'
 import NavBar from '../components/NavBar'
 import Loading from '../components/Loading'
@@ -129,6 +130,7 @@ const ExplorePage = () => {
     const handleToggleFollow = async (userId) =>{
         try {
             await followUserApi(userId,fetchData)
+            await createChatRoomApi(userId)
         } catch (error) {
             toast.error('Cannot follow user',{
                 position:'top-center'

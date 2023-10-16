@@ -36,7 +36,7 @@ class RoomMessageView(APIView):
 
     def get(self,request,pk):
         try:
-            room= Room.objects.all(pk=pk)
+            room= Room.objects.get(pk=pk)
             messages= Message.objects.filter(room=room)
             serialized_messages = self.serializer_class(messages,many=True).data
             return Response(serialized_messages,status=status.HTTP_200_OK)
@@ -64,8 +64,5 @@ class ChatRoomListView(generics.ListAPIView):
     serializer_class = RoomListSerializer
 
     def get_queryset(self):
-        if self.request.user.is_authenticated:
-            user = self.request.user
-            return Room.objects.filter(members=user)
-        else:
-            return Room.objects.none()
+        user = self.request.user
+        return Room.objects.filter(members=user)

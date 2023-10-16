@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components';
 import { BASE_URL } from '../utils/constants';
 import NavBar from '../components/NavBar';
@@ -102,50 +102,73 @@ const Messages = () => {
     }
   },[ws])
 
-  const handleSendMessage = () => {
-    if (ws && inputMessage.trim() !== '') {
-      ws.send(JSON.stringify({message:inputMessage}))
-      setInputMessage('')
-    }
+  const ref = useChatScroll(messages)
+
+  function useChatScroll(dep) {
+    const ref = useRef()
+    useEffect(() => {
+      if (ref.current) {
+        ref.current.scrollTop = ref.current.scrollHeight
+      }
+    }, [dep])
+    return ref
   }
 
-  const joinChatroom = async (chatroomId , userId , dp_image) => {
+  const handleSendMessage = () => {
+    if (ws && inputMessage.trim() !== "") {
+      ws.send(JSON.stringify({ message: inputMessage }));
+      setInputMessage("");
+    }
+  };
+
+  const joinChatroom = async (chatroomId, userId , dp_image) => {
     try {
-      setBg(true)
-      setDpChat(dp_image)
+      setBg(true);
+      setDpChat(dp_image);
+      // await createChatRoomApi(userId);
 
-      const accessToken = localStorage.getItem('access_token')
-      const websocketProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://'
-      const wsUrl = `${websocketProtocol}127.0.0.1:8000/ws/chat/${chatroomId}/?token=${accessToken}`
-      const newChatWS = new WebSocket(wsUrl)
+      const accessToken = localStorage.getItem("access_token");
+      const websocketProtocol =  window.location.protocol === "https:" ? "wss://" : "ws://";
+      // const wsUrl = `${websocketProtocol}${window.location.host}/ws/chat/${chatroomId}/?token=${accessToken}`;
+      const wsUrl = `${websocketProtocol}127.0.0.1:8000/ws/chat/${chatroomId}/?token=${accessToken}`;
+      const newChatWs = new WebSocket(wsUrl);
 
-      newChatWS.onopen = async () => {
-        console.log('Chatroom WebSocket connection opened')
-        const previousMessages = await getChatMessageApi(chatroomId)
-        setMessages(previousMessages)
-        await messageSeenApi(userId)
+      newChatWs.onopen = async () => {
+        console.log("Chatroom WebSocket connection opened.");
+        // Fetch previous messages when the WebSocket connection is opened
+        const previousMessages = await getChatMessageApi(chatroomId);
+        setMessages(previousMessages);
+        await messageSeenApi(userId);
         setProfiles((prevProfiles) => {
-          return prevProfiles.map((profile) => {
-            if (profile.id === chatroomId) {
-              return { ...profile,unseen_message_count:0}
-            }
-            return profile
-          })
-        })
-      }
-      newChatWS.onclose = () => {
-        console.log('Chatroom WebSocket connection closed')
-      }
+            return prevProfiles.map((profile) => {
+              if (profile.id === chatroomId) {
+                // Set unseen_message_count to zero
+                return { ...profile, unseen_message_count: 0 };
+              }
+              return profile;
+            });
+          });
+        };
+        newChatWs.onerror = (event) => {
+          console.error('WebSocket error:', event);
+        };
+        
+        newChatWs.onclose = (event) => {
+          if (event.wasClean) {
+            console.log(`WebSocket connection closed cleanly, code: ${event.code}, reason: ${event.reason}`);
+          } else {
+            console.error(`WebSocket connection closed abruptly, code: ${event.code}, reason: ${event.reason}`);
+          }
+        };
+        newChatWs.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            console.log(message);
+            // Handle incoming messages from the chatroom WebSocket
+          };
 
-      newChatWS.onmessage = (event) => {
-        const message = JSON.parse(event.data)
-        console.log(message)
-      }
-
-      setWs(newChatWS)
-
+        setWs(newChatWs);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
   }
 
@@ -160,10 +183,10 @@ const Messages = () => {
         <NavBar />
       </NavContainer>
       <MessageContentWrapper>
-        <div className="flex h-screen  p-2">
+      <div className="flex h-screen  p-2">
         <div className="flex flex-col flex-grow w-3/5 mt-20 p-1 m-2 bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.27),0_10px_20px_-2px_rgba(0,0,0,0.04)] rounded-lg overflow-hidden">
           {bg ? (
-            <div className="flex flex-col flex-grow h-0 p-4 overflow-auto">
+            <div ref={ref} className="flex flex-col flex-grow h-0 p-4 overflow-auto">
               {messages?.map((message, index) =>
                 message?.sender_email === user.email ? (
                   <div
@@ -241,7 +264,7 @@ const Messages = () => {
               <div
                 key={profile.id}
                 onClick={() => joinChatroom(profile.id, profile.members[0].id, profile.members[0].display_pic)}
-                className="flex items-center rounded-lg m-1 cursor-pointer bg-gray-300 p-2 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]"
+                className="relative flex items-center rounded-lg m-1 cursor-pointer bg-gray-300 p-2 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]"
               >
                 {profile.unseen_message_count > 0 && (
                   <div className="absolute top-0 left-0 bg-red-500 text-white px-2 py-1 rounded-full">
