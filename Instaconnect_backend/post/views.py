@@ -8,6 +8,7 @@ from django.db.models import Q
 from operator import attrgetter
 from .signals import follow_notification
 from django.shortcuts import get_object_or_404
+from django.db.models.functions import Concat
 # Create your views here.
 
 
@@ -138,6 +139,8 @@ class LikeView(APIView):
             post = Posts.objects.get(pk=pk)
             if request.user in post.likes.all():
                 post.likes.remove(request.user)
+                # Delete the notification associated with unliking the post
+                Notification.objects.filter(from_user=user, to_user=post.author, post=post, notification_type=Notification.NOTIFICATION_TYPES[0][0]).delete()
                 return Response('Post unliked ', status=status.HTTP_200_OK)
             else:
                 post.likes.add(request.user)
@@ -162,36 +165,65 @@ class CreateComment(APIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = CommentSerializer
 
-    def post(self, request, pk , *args,**kwargs):
+    def post(self, request, pk, *args, **kwargs):
         try:
             user = request.user
             post = Posts.objects.get(id=pk)
             body = request.data['body']
-            serializer = self.serializer_class(data=request.data)
-            if serializer.is_valid():
-                serializer.save(user=user,post_id=pk,body=body)
+
+            # Check if a notification already exists for this user and post
+            existing_notification = Notification.objects.filter(
+                from_user=user,
+                to_user=post.author,
+                post=post,
+                notification_type=Notification.NOTIFICATION_TYPES[3][0]
+            ).first()
+
+            if not existing_notification:
+                serializer = self.serializer_class(data=request.data)
+                if serializer.is_valid():
+                    serializer.save(user=user, post_id=pk, body=body)
+                    
                 Notification.objects.create(
-                    from_user = user,
-                    to_user = post.author,
-                    post = post ,
-                    notification_type = Notification.NOTIFICATION_TYPES[3][0],
+                    from_user=user,
+                    to_user=post.author,
+                    post=post,
+                    notification_type=Notification.NOTIFICATION_TYPES[3][0],
                 )
                 return Response(status=status.HTTP_201_CREATED)
             else:
-                return Response(serializer.errors,status=status.HTTP_406_NOT_ACCEPTABLE)
+                # A notification already exists for this user and post, so don't create a new one
+                return Response("A notification already exists for this comment.", status=status.HTTP_200_OK)
+
+        except Posts.DoesNotExist:
+            return Response('Post not found', status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
         
 class DeleteComment(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def delete(self,request,pk):
+    def delete(self, request, pk):
         try:
-            comment = Comment.objects.get(id=pk,user=request.user)
+            comment = Comment.objects.get(id=pk, user=request.user)
+
+            # Find and delete the associated notification
+            notification_type = Notification.NOTIFICATION_TYPES[3][0]  # Notification type for comments
+            post = comment.post
+
+            Notification.objects.filter(
+                Q(from_user=request.user, to_user=post.author, post=post, notification_type=notification_type) |
+                Q(from_user=post.author, to_user=request.user, post=post, notification_type=notification_type)
+            ).delete()
+
             comment.delete()
             return Response(status=status.HTTP_200_OK)
         except Comment.DoesNotExist:
-            return Response('No Such comment found',status=status.HTTP_404_NOT_FOUND)
+            return Response('No such comment found', status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 
@@ -281,6 +313,8 @@ class FollowUserView(APIView):
             if is_following:
                 is_following.delete()
                 response_msg = 'Unfollowed Successfully'
+                # Delete the notification associated with the unfollowed user
+                Notification.objects.filter(from_user=user, to_user=follows, notification_type=Notification.NOTIFICATION_TYPES[2][0]).delete()
             else:
                 new_follow = Follow(follower=user,following=follows)
                 new_follow.save()
@@ -348,3 +382,17 @@ class NotificationsSeenView(APIView):
         
     def get(self, request , pk , *args, **kwargs):
         return Response('GET method not allowed for the endpoint ', status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    
+
+class CheckFollowStatus(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def get(self,request,email):
+        print('check follow status working',email)
+        if self.request.user.is_authenticated:
+            try:
+                profile_user = UserAccount.objects.get(email=email)
+                follow_relation = Follow.objects.filter(follower=request.user,following=profile_user).exists()
+                return Response({'isFollowing':follow_relation},status=status.HTTP_200_OK)
+            except UserAccount.DoesNotExist:
+                return Response({'isFollowing':False}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'isFollowing':False},status=status.HTTP_401_UNAUTHORIZED)

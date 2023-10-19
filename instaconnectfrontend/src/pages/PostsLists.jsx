@@ -179,10 +179,10 @@ const PostsLists = () => {
                                 <p className='text-muted mb-0'>{item.created_time} ago</p>
                             </td>
                             <td>
-                                {item.is_deleted ? (
-                                <button className="bg-red-500 rounded-md p-2 text-white font-bold hover:bg-red-600 relative" disabled>Deleted</button>
+                                {item.is_blocked ? (
+                                <span className="bg-danger text-white rounded-pill p-2 font-weight-bold">hide</span>
                                 ):(
-                                <button className="bg-green-500 rounded-md p-2 text-white font-bold hover:bg-green-600 relative" >Active</button>
+                                  <span className="bg-success text-white rounded-pill p-2 font-weight-bold">Active</span>
                                 )}
                             </td>
                             <td>

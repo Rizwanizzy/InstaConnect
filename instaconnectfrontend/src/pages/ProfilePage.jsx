@@ -11,6 +11,9 @@ import DisplayPicture from '../images/Default-Profile-Picture1.png'
 import followUserApi from '../api/followUserApi';
 import { toast } from 'react-toastify';
 import { followUser, unfollowUser } from '../redux/slice';
+import Button from 'react-bootstrap/Button';
+import axios from 'axios';
+import checkfollowstatusapi from '../api/checkfollowstatusapi';
 
 const UserPage = styled.div`
   display: flex;
@@ -151,7 +154,6 @@ const ProfilePage = () => {
   const [showPostDetailModal,setShowPostDetailModal] = useState(false)
   const [isFollowingLocal,setIsFollowingLocal] = useState(false)
   const dispatch = useDispatch()
-  const {isFollowing} =useSelector((state) => state.user)
 
   const param = useParams()
   const email = param.email
@@ -164,7 +166,6 @@ const ProfilePage = () => {
         if (data && data.profile_user){
           setProfile(data.profile_user)
           setPosts(data.profile_posts)
-          // setIsFollowing(data.isFollowing)
           setIsLoading(false)
         } else{
           console.error('Profile data is undefined')
@@ -179,10 +180,22 @@ const ProfilePage = () => {
   },[email,showPostDetailModal])
 
   useEffect(() => {
-    if (profile && profile.id) {
-      const localStorageKey = `following_${profile.id}`;
-      const isFollowingInLocalStorage = localStorage.getItem(localStorageKey);
-      setIsFollowingLocal(isFollowingInLocalStorage === 'true');
+    if (isAuthenticated && profile && user) {
+      const fetchFollowStatus = async () => {
+        try {
+          const response = await checkfollowstatusapi(profile.email)
+          if (!response.error) {
+            const { isFollowing } = response;
+            setIsFollowingLocal(isFollowing);
+          } else {
+            // Handle the error case, e.g., show an error message
+            console.log('Error checking follow status:', response.error);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      fetchFollowStatus();
     }
   }, [profile]);
 
@@ -203,18 +216,18 @@ const ProfilePage = () => {
 
       if (isFollowingLocal) {
         updatedProfile.following_count-=1
-        dispatch(unfollowUser(userId))
-        setIsFollowingLocal(false)
-  
-        const localStorageKey = `following_${userId}`
-        localStorage.setItem(localStorageKey,'false')
+        dispatch(unfollowUser(userId)).then(() => {
+          setIsFollowingLocal(false)
+          const localStorageKey = `following_${userId}`
+          localStorage.setItem(localStorageKey,'false')
+        })
       } else {
         updatedProfile.following_count+=1
-        dispatch(followUser(userId))
-        setIsFollowingLocal(true)
-        
-        const localStorageKey = `following_${userId}`
-        localStorage.setItem(localStorageKey,'true')
+        dispatch(followUser(userId)).then(() => {
+          setIsFollowingLocal(true); // Update the state
+          const localStorageKey = `following_${userId}`;
+          localStorage.setItem(localStorageKey, 'true');
+        });
       }
 
       setProfile(updatedProfile)
@@ -232,31 +245,58 @@ const ProfilePage = () => {
       </NavContainer>
       <ProfileContentWrapper>
         <ProfileContainer>
-          <ProfileUpdateModal isVisible={showProfileModal} onClose={() =>setShowProfileModal(false)} />
-          <PostDetailModal isVisible={showPostDetailModal} onClose={() =>setShowPostDetailModal(false)} postID={postId}/>
-          <label htmlFor="profilePhotoInput">
-            <ProfilePhoto>
-              <img src={ 
-                user?.email === profile?.email?
-                user?.display_pic ? `${BASE_URL}${user?.display_pic}` : DisplayPicture
-                : profile?.display_pic?`${BASE_URL}${profile.display_pic}` : DisplayPicture} alt="profile" />
-            </ProfilePhoto>
-          </label>
-          <ProfileInfo>
+            <ProfileUpdateModal isVisible={showProfileModal} onClose={() =>setShowProfileModal(false)} />
+            <PostDetailModal isVisible={showPostDetailModal} onClose={() =>setShowPostDetailModal(false)} postID={postId}/>
+            <label htmlFor="profilePhotoInput">
+              <ProfilePhoto>
+                <img src={ 
+                  user?.email === profile?.email?
+                  user?.display_pic ? `${BASE_URL}${user?.display_pic}` : DisplayPicture
+                  : profile?.display_pic?`${BASE_URL}${profile.display_pic}` : DisplayPicture} alt="profile" />
+              </ProfilePhoto>
+            </label>
             <div className="profile-content">
               <UserName>
-                <p className="name mr-5">{profile?.username?? ""}</p>
-                {user?.email === profile?.email?
-                <button className='btn btn-secondary w-20' onClick={() => user?.email === profile?.email && setShowProfileModal(true)} >Edit</button>
-                  : 
+                <p className="name mr-5" style={{ fontWeight: 'bold', fontSize:'x-large', margin:'0px -3px'}}>{profile?.username ?? ""}</p>
+
+                {user?.email !== profile?.email && (
+                  isFollowingLocal ? (
+                    <Button
+                      className='mr-3'
+                      type='button'
+                      variant='outline-secondary'
+                      data-te-ripple-init
+                      data-te-ripple-color="light"
+                      title={`Unfollow ${profile?.username}`}
+                      onClick={() => handleToggleFollow(profile?.id)}
+                    >
+                      Unfollow
+                    </Button>
+                  ) : (
+                    <Button
+                      className='mr-3'
+                      type='button'
+                      variant='outline-primary'
+                      data-te-ripple-init
+                      data-te-ripple-color="light"
+                      title={`Follow ${profile?.username}`}
+                      onClick={() => handleToggleFollow(profile?.id)}
+                    >
+                      Follow
+                    </Button>
+                  )
+                )}
+
+                {user?.email === profile?.email ?
+                  <button className='btn btn-secondary w-20' onClick={() => user?.email === profile?.email && setShowProfileModal(true)}>Edit</button>
+                  :
                   <button className='btn btn-primary' >Message</button>
                 }
               </UserName>
               <div className="stats">
-                <div className="flex">
+                <div className="flex" style={{marginLeft:'-20px'}}>
                   <div className="lg:mr-4 p-3 text-center">
                     <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-900">
-
                     </span>
                     <CustomText style={{ fontWeight: 'bold' }} className="text-sm text-blueGray-400">{profile?.total_posts ?? "0"}  Posts</CustomText>
                   </div>
@@ -267,21 +307,18 @@ const ProfilePage = () => {
                   </div>
                   <div className="mr-4 p-3 text-center">
                     <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-900">
-
                     </span>
                     <CustomText style={{ fontWeight: 'bold' }} className="text-sm text-blueGray-400">{profile?.follower_count ?? "0"} Following</CustomText>
                   </div>
-                  
                 </div>
               </div>
               <p className="about">
                 {user?.email === profile?.email
                   ? `${user?.first_name ?? ""} ${user?.last_name ?? ""}`
                   : `${profile?.first_name ?? ""} ${profile?.last_name ?? ""}`}
-              </p>              
-              <p className="about">{profile?.email?? ""}</p>
+              </p>
+              <p className="about">{profile?.email ?? ""}</p>
             </div>
-          </ProfileInfo>
         </ProfileContainer>
 
 

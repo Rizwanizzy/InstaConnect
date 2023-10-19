@@ -191,12 +191,13 @@ const ReportedPostsList = () => {
                                 <p className='fw-bold mb-1'>{item.first_name} {item.last_name}</p>
                                 <p className='text-muted mb-0'>{item.created_time} ago</p>
                             </td>
-                            <td>
-                                {item.is_deleted ? (
-                                <button className="bg-red-500 rounded-md p-2 text-white font-bold hover:bg-red-600 relative" disabled>Deleted</button>
-                                ):(
-                                <button className="bg-green-500 rounded-md p-2 text-white font-bold hover:bg-green-600 relative" >Active</button>
-                                )}
+                            <td >
+                                {item.is_blocked ? (
+                                  <span className="mt-2 bg-danger text-white rounded-pill p-2 font-weight-bold">hide</span>
+                                  ):(
+                                    <span className="mt-2 bg-success text-white rounded-pill p-2 font-weight-bold">Active</span>
+                                  )
+                                }
                             </td>
                             <td>
                                 {item.is_blocked ? (

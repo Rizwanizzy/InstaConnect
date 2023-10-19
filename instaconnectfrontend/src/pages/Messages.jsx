@@ -194,8 +194,8 @@ const Messages = () => {
                     className="flex w-full mt-2 space-x-3 max-w-xs ml-auto justify-end"
                   >
                     <div>
-                      <div className="bg-blue-600 text-white p-3 rounded-l-lg rounded-br-lg">
-                        <p className="text-sm">
+                      <div className="bg-green-500 text-white p-1 rounded-l-lg rounded-br-lg">
+                        <p className="text-sm m-1">
                           {message.message ? message.message : message.text}
                         </p>
                       </div>
@@ -217,8 +217,8 @@ const Messages = () => {
                       alt="user"
                     />
                     <div>
-                      <div className="bg-gray-300 p-3 rounded-r-lg rounded-bl-lg">
-                        <p className="text-sm">
+                      <div className="bg-gray-300 p-1 rounded-r-lg rounded-bl-lg">
+                        <p className="text-sm m-1">
                           {message.message ? message.message : message.text}
                         </p>
                       </div>
@@ -267,7 +267,7 @@ const Messages = () => {
                 className="relative flex items-center rounded-lg m-1 cursor-pointer bg-gray-300 p-2 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]"
               >
                 {profile.unseen_message_count > 0 && (
-                  <div className="absolute top-0 left-0 bg-red-500 text-white px-2 py-1 rounded-full">
+                  <div className="absolute top-0 left-0 bg-red-500 text-white px-2 py-1 rounded-full w-6 h-6 flex items-center justify-center">
                     {profile.unseen_message_count}
                   </div>
                 )}
