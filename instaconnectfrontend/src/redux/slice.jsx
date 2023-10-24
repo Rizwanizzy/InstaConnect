@@ -84,6 +84,7 @@ export const login = createAsyncThunk(
     }
 )
 
+
 export const logout = createAsyncThunk(
     'users/logout',
     async(_,thunkAPI) =>{
@@ -202,6 +203,7 @@ const INITIAL_STATE ={
     registered:false,
     isSuperuser:false,
     posts:[],
+    adminData: null,
     isFollowing:false,
 }
 

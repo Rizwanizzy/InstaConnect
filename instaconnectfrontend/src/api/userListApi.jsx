@@ -16,14 +16,18 @@ const userListApi = async () => {
             console.log(response.data)
             return response.data
         } else {
-            console.log(response.error)
+            console.error('Failed to fetch user details:', response.statusText);
+            toast.error('Failed fetching user details.', {
+                position: 'top-center',
+            });
+            return null;
         }
-        console.log(response.data)
     } catch (error) {
-        console.error(error)
-        toast.error('Failed fetching user details.',{
-            position:'top-center'
-        })
+        console.error(error);
+        toast.error('Failed fetching user details.', {
+        position: 'top-center',
+        });
+        return null;
     }
 }
 

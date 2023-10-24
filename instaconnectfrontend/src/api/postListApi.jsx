@@ -10,11 +10,12 @@ const postListApi = async () =>{
             console.log('homepage',response.data)
             return response.data
         }else{
-            console.log(response.error)
+            console.error('Error:', response.status, response.statusText);
+            return { posts: [], users_not_following: [] };
         }
-        console.log(response.data)
     } catch(error){
-        console.error(error)
+        console.error('API Error:', error);
+        return { posts: [], users_not_following: [] }
     }
 }
 

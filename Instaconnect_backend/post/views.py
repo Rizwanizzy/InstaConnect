@@ -14,7 +14,7 @@ from django.db.models.functions import Concat
 
 class PostListView(generics.ListAPIView):
     permission_classes=[permissions.IsAuthenticated]
-    queryset = Posts.objects.all().exclude(is_deleted=True).order_by('-created_at')
+    queryset = Posts.objects.filter(is_deleted=False, is_blocked=False).order_by('-created_at')
     serializer_class=PostSerializer
 
 class PostHomeView(APIView):
@@ -30,12 +30,28 @@ class PostHomeView(APIView):
             for follower in followers:
                 posts=Posts.objects.filter(author=follower.following,is_deleted=False,is_blocked=False).order_by('-created_at')
                 posts_by_followers.extend(posts)
+            
+            all_users = UserAccount.objects.filter(is_admin=False).order_by('-id')
+            all_users_serializer = UserSerializer(all_users , many = True)
+            users_following = followers.values_list('following' , flat=True)
+
+            users_not_following = [
+                user for user in all_users_serializer.data 
+                if user['id'] != request.user.id and user['id'] not in users_following
+            ]
+
             all_posts = list(post_by_user)+posts_by_followers
             all_posts_sorted = sorted(all_posts,key=attrgetter('created_at'),reverse=True)
             serializer = PostSerializer(all_posts_sorted,many=True)
+
+            response_data = {
+                'posts':serializer.data,
+                'users_not_following':users_not_following
+            }
             print('home page is working')
-            return Response(serializer.data,status=status.HTTP_200_OK)
-        except:
+            return Response(response_data,status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"An exception occurred: {str(e)}")
             return Response(status=status.HTTP_404_NOT_FOUND)
         
 

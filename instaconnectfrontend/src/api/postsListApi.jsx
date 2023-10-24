@@ -15,11 +15,12 @@ const postsListApi = async () => {
             console.log('homepage',response.data)
             return response.data
         } else {
-            console.log(response.error)
+            console.error('Failed to fetch posts:', response.statusText);
+            return null;
         }
-        console.log(response.data)
     } catch (error) {
-        console.error(error)
+        console.error(error);
+        return null;
     }
 }
 

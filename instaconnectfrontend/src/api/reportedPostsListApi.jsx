@@ -16,11 +16,12 @@ const reportedPostsListApi = async () => {
             console.log('homepage',response.data)
             return response.data
         } else {
-            console.log(response.error)
+            console.error('Failed to fetch reported posts:', response.statusText);
+            return null;
         }
-        console.log(response.data)
     } catch (error) {
-        console.error(error)
+        console.error(error);
+        return null;
     }
 }
 

@@ -168,40 +168,43 @@ export const BodyExtraSmall = styled(BodySmall)`
 
 
 const AdminDashboard = () => {
-    const [totalUsers,setTotalUsers] = useState(0)
-    const [totalPosts,setTotalPosts] = useState(0)
-    const [totalReportedPosts,setTotalReportedPosts] = useState(0)
+    const [totalUsers,setTotalUsers] = useState([])
+    const [totalPosts,setTotalPosts] = useState([])
+    const [totalReportedPosts,setTotalReportedPosts] = useState([])
     const [chartData, setChartData] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
       const fetchDetails = async () => {
         try {
           const users = await userListApi();
-          const posts = await postsListApi();
-          const reportedPosts = await reportedPostsListApi();
-          
           setTotalUsers(users);
+
+          const posts = await postsListApi();
           setTotalPosts(posts);
+
+          const reportedPosts = await reportedPostsListApi();
           setTotalReportedPosts(reportedPosts);
 
+          console.log('Users:', users);
+          console.log('Posts:', posts);
+          console.log('Reported Posts:', reportedPosts);
+          
           setChartData([
             { name: 'Total Users', value: users.length },
             { name: 'Total Posts', value: posts.length },
             { name: 'Total Reported Posts', value: reportedPosts.length },
           ]);
 
+          setIsLoading(false)
+
         } catch (error) {
           console.error(error);
+          setIsLoading(false)
         }
       };
     
       fetchDetails()
-        .then(() => {
-          // Now you can log the updated values
-          console.log('totalUsers:', totalUsers);
-          console.log('totalposts:', totalPosts);
-          console.log('totalReportedPosts:', totalReportedPosts);
-        });
     }, []);
 
     const data = [
@@ -270,6 +273,10 @@ const AdminDashboard = () => {
           <MainTitle className="main-title">
             <h3>DASHBOARD</h3>
           </MainTitle>
+          {isLoading ? (
+              // Display a loading indicator while fetching data
+              <div>Loading...</div>
+          ) : (
           <MainCards className="main-cards">
             <FirstCard className="card">
               <CardInner className="card-inner">
@@ -278,7 +285,7 @@ const AdminDashboard = () => {
                   <BsListCheck className='card_icon' />
                 </CardIcon>
               </CardInner>
-              <h1>{totalPosts.length}</h1>
+              <h1>{totalPosts?.length || 0}</h1>
             </FirstCard>
             <SecondCard className="card">
               <CardInner className="card-inner">
@@ -287,7 +294,7 @@ const AdminDashboard = () => {
                   <BsPeopleFill className='card_icon' />
                 </CardIcon>
               </CardInner>
-              <h1>{totalUsers.length}</h1>
+              <h1>{totalUsers?.length || 0}</h1>
             </SecondCard>
             <ThirdCard className="card">
               <CardInner className="card-inner">
@@ -296,9 +303,10 @@ const AdminDashboard = () => {
                   <BsMenuButtonWideFill className='card_icon' />
                 </CardIcon>
               </CardInner>
-              <h1>{totalReportedPosts.length}</h1>
+              <h1>{totalReportedPosts?.length || 0}</h1>
             </ThirdCard>
           </MainCards>
+          )}
           <Charts className="charts">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
