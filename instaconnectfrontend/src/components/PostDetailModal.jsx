@@ -13,7 +13,8 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import ShareIcon from '@mui/icons-material/Share';
 import UpdatePostApi from '../api/UpdatePostApi';
-// import './PostDetailModal.css'
+import reportPostApi from '../api/reportPostApi';
+import PostModal from './PostModal';
 
 
 const PostDetailModal = ({ isVisible, onClose, postID }) => {
@@ -27,13 +28,24 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
     const [updatedBody, setUpdatedBody] = useState(''); // Add updated body state
     const {user} = useSelector(state=>state.user)
     const inputRef = useRef(null);
+    const [showPostDetailModal,setShowPostDetailModal] = useState(false)
+    const [initialCaption, setInitialCaption] = useState('');
+    const [initialImage, setInitialImage] = useState(null);
+    
+    const updateCaption = (newCaption) => {
+      setInitialCaption(newCaption);
+    };
 
     useEffect(() => {
       const fetchData = async () => {
         try {
           const data = await getPostDetailApi(postID);
           setPost(data);
+
+          console.log('Data received from API:', data);
           setComments(data.comments)
+
+          updateCaption(data.body)
         } catch (error) {
           console.error(error);
         }
@@ -42,18 +54,15 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
       if (postID) {
         fetchData();
       }
-    }, [postID]);
+    }, [postID,updateCaption]);
     
     if( !isVisible ) return null;
-
-    const handleClose = (e) =>{
-        if(e.target.id === 'wrapper') onClose();
-    }
 
     const fetchData = async () => {
       try {
         const data = await getPostDetailApi(postID);
         setPost(data);
+        console.log('Data received from API:', data);
         setComments(data.comments)
       } catch (error) {
         console.error(error);
@@ -76,37 +85,33 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
   
     const handleUpdatePost = (postId) =>{
       setPostId(postId)
+
+      const postToUpdate = post
+      console.log('postToUpdate',postToUpdate)
+      if (postToUpdate) {
+        console.log('inside handlupdatePost',postId,postToUpdate.body,postToUpdate.img)
+        setInitialCaption(postToUpdate.body)
+        setInitialImage(postToUpdate.img)
+      }
       setShowPostModal(true)
     }
 
-    const handleEditBody = () =>{
-      setEditingBody(true)
-      setUpdatedBody(post.body)
-    }
-
-    const handleCancelEdit = () =>{
-      setEditingBody(false)
-      setUpdatedBody('')
-    }
-
-    const handleSaveEdit = async () =>{
-      try {
-        await UpdatePostApi(postId,updatedBody)
-        await fetchData()
-        setEditingBody(false)
-      } catch (error){
-        toast.error('Failure , Post not updated',{
-        position:'top-center'
-        })
-        
-      }
+    const closePostModal = () =>{
+      setShowPostModal(false)
+      setShowPostDetailModal(false)
     }
   
     const handleReportPost = async (postId) => {
       try {
+        await reportPostApi(postId,fetchData)
+        toast.success('Post Reported successfully',{
+          position:'top-center'
+        })
   
       } catch (err) {
-  
+        toast.error('Failure, post not Reported!',{
+          position:'top-center'
+        })
       }
     };
 
@@ -148,6 +153,8 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
       className="z-10 fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center "
       id="wrapper"
     >
+      <PostModal isVisible={showPostModal} onClose={closePostModal} postID={postId} initialCaption={initialCaption} initialImage={initialImage} updateCaption={updateCaption} />
+
       <div className="m-2 w-3/5 flex flex-col p-2 rounded">
         <button className="text-white text-xl place-self-end" onClick={onClose}>
           x
@@ -173,33 +180,12 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
                     />
                   </div>
                   <div>
-                    {editingBody ? (
-                      <>
-                        <textarea value={updatedBody} onChange={(e) => setUpdatedBody(e.target.value)} className='text-sm text-gray-900 border rounded-lg p-2 w-full ' rows='4' />
-                        <div className="flex space-x-2 mt-2">
-                          <button
-                              onClick={handleCancelEdit}
-                              className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg"
-                            >
-                              Cancel
-                          </button>
-                          <button
-                            onClick={handleSaveEdit}
-                            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg"
-                          >
-                            Save
-                          </button>
-                        </div>
-                      </>
-                    ):(
-                      <>
-                        <h1 className="text-xl font-semibold">
-                          {post?.author?.username}
-                        </h1>
-                        <small className="text-gray-400">{post?.body}</small>
-                      </>
-                    )}
-                    
+                    <>
+                      <h1 className="text-xl font-semibold">
+                        {post?.author?.username}
+                      </h1>
+                      <small className="text-gray-400">{post?.body}</small>
+                    </>
                   </div>
                 </div>
                 <br />

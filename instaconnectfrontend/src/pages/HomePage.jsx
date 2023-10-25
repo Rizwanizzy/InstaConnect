@@ -402,7 +402,7 @@ const HomePage = () => {
           </div>
           {usersNotFollowing && usersNotFollowing.length > initialUsersToDisplay && (
               <button className='font-bold cursor-pointer' style={{ color: 'gray' }} onClick={toggleShowAllUsers}>
-                {showAllUsers ? 'See Less' : 'See All'}
+                {showAllUsers ? 'Show Less' : 'Show More'}
               </button>
           )}
         </SuggessionsContainer>

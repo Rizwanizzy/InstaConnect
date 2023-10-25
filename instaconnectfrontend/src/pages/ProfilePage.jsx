@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import NavBar from '../components/NavBar';
 import styled from 'styled-components';
 import { useSelector,useDispatch } from 'react-redux';
-import { Navigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import userProfileApi from '../api/userProfileApi';
 import { BASE_URL } from '../utils/constants';
 import ProfileUpdateModal from '../components/ProfileUpdateModal';
@@ -14,10 +14,11 @@ import { followUser, unfollowUser } from '../redux/slice';
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 import checkfollowstatusapi from '../api/checkfollowstatusapi';
+import createChatRoomApi from '../api/createChatRoomApi';
 
 const UserPage = styled.div`
   display: flex;
-  height: 100vh;
+  height: 80vh;
 `;
 
 const NavContainer = styled.div`
@@ -33,6 +34,7 @@ const ProfileContentWrapper = styled.div`
   display: flex;
   flex-direction: column; /* Display children in a column */
   padding-left: 16.5%;
+  height : 50vh;
 `;
 
 const ProfileContainer = styled.div`
@@ -41,9 +43,9 @@ const ProfileContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 2fr;
   font-family: Arial, Helvetica, sans-serif;
-  padding: 0em 0em 2em 5em;
+  padding: 0em 0em 0em 5em;
   margin-top: 4em;
-  margin-bottom: 2em;
+  margin-bottom: 0em;
 `;
 
 const ProfilePhoto = styled.div`
@@ -216,17 +218,21 @@ const ProfilePage = () => {
 
       if (isFollowingLocal) {
         updatedProfile.following_count-=1
-        dispatch(unfollowUser(userId)).then(() => {
+        dispatch(unfollowUser(userId)).then(async () => {
           setIsFollowingLocal(false)
           const localStorageKey = `following_${userId}`
           localStorage.setItem(localStorageKey,'false')
+
+          await createChatRoomApi(userId)
         })
       } else {
         updatedProfile.following_count+=1
-        dispatch(followUser(userId)).then(() => {
+        dispatch(followUser(userId)).then(async () => {
           setIsFollowingLocal(true); // Update the state
           const localStorageKey = `following_${userId}`;
           localStorage.setItem(localStorageKey, 'true');
+
+          await createChatRoomApi(userId)
         });
       }
 
@@ -287,11 +293,14 @@ const ProfilePage = () => {
                   )
                 )}
 
-                {user?.email === profile?.email ?
-                  <button className='btn btn-secondary w-20' onClick={() => user?.email === profile?.email && setShowProfileModal(true)}>Edit</button>
-                  :
-                  <button className='btn btn-primary' >Message</button>
-                }
+                {user?.email === profile?.email ? (
+                  <button className='btn btn-secondary w-20' onClick={() => setShowProfileModal(true)}>Edit</button>
+                ) : (
+                  isFollowingLocal ? (
+                    <Link to="/messages" className='btn btn-primary'>Message</Link>
+                  ) : null
+                )}
+
               </UserName>
               <div className="stats">
                 <div className="flex" style={{marginLeft:'-20px'}}>
@@ -320,6 +329,11 @@ const ProfilePage = () => {
               <p className="about">{profile?.email ?? ""}</p>
             </div>
         </ProfileContainer>
+
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2em' }}>
+          <hr style={{ width: '80%' , border: '2px solid black' }} />
+        </div>
+
 
 
         {/* <div className="mt-10 py-10 border-t border-blueGray-200 text-center"> */}

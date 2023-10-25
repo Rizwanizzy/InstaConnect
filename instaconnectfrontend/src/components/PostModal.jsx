@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import createPostApi from '../api/createPostApi';
 import { BASE_URL } from '../utils/constants';
 
-const PostModal = ({ isVisible, onClose, postID, initialCaption, initialImage }) => {
+const PostModal = ({ isVisible, onClose, postID, initialCaption, initialImage ,updateCaption }) => {
   const [postImage, setPostImage] = useState(initialImage || null);
   const [caption, setCaption] = useState(initialCaption || '');
   const [previewImageUrl, setPreviewImageUrl] = useState(initialImage || null);
@@ -34,9 +34,13 @@ const PostModal = ({ isVisible, onClose, postID, initialCaption, initialImage })
       try {
         onClose();
         await UpdatePostApi(postID, caption, postImage);
-          toast.success('Post updated successfully', {
+        toast.success('Post updated successfully', {
           position: 'top-center',
         });
+  
+        // Call the updateCaption function with the new caption
+        console.log('updateCaption',caption)
+        updateCaption(caption);
         setCaption('');
       } catch (error) {
         toast.error('Failure, Post not updated!', {
@@ -91,24 +95,24 @@ const PostModal = ({ isVisible, onClose, postID, initialCaption, initialImage })
               </div>
             )}
 
-{postImage && (
-  <div className="shrink-0 flex justify-center">
-    {previewImageUrl && (
-      <img
-        id="preview_img"
-        className="w-80 object-cover rounded-lg my-2"
-        src={
-          previewImageUrl.startsWith('http://127.0.0.1:8000')
-            ? previewImageUrl
-            : postID
-            ? `${BASE_URL}${postImage}`
-            : previewImageUrl
-        }
-        alt="Current"
-      />
-    )}
-  </div>
-)}
+            {postImage && (
+            <div className="shrink-0 flex justify-center">
+                {previewImageUrl && (
+                <img
+                    id="preview_img"
+                    className="w-80 object-cover rounded-lg my-2"
+                    src={
+                    previewImageUrl.startsWith('http://127.0.0.1:8000')
+                        ? previewImageUrl
+                        : postID
+                        ? `${BASE_URL}${postImage}`
+                        : previewImageUrl
+                    }
+                    alt="Current"
+                />
+                )}
+            </div>
+            )}
 
             <div className="relative my-5" data-te-input-wrapper-init>
               <input

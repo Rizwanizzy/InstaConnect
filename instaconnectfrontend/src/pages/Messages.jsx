@@ -65,6 +65,19 @@ const ProfileInfo = styled.div`
 }
 `;
 
+const ChatInput = styled.div`
+  position: fixed;
+  bottom: 25px;
+  width: 44%;
+  background-color: #c2c2c2;
+  padding: 1rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1000;
+`;
+
 
 const Messages = () => {
 
@@ -186,7 +199,7 @@ const Messages = () => {
       <div className="flex h-screen  p-2">
         <div className="flex flex-col flex-grow w-3/5 mt-20 p-1 m-2 bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.27),0_10px_20px_-2px_rgba(0,0,0,0.04)] rounded-lg overflow-hidden">
           {bg ? (
-            <div ref={ref} className="flex flex-col flex-grow h-0 p-4 overflow-auto">
+            <div ref={ref} className="flex flex-col flex-grow h-0 p-4 overflow-auto mb-5">
               {messages?.map((message, index) =>
                 message?.sender_email === user.email ? (
                   <div
@@ -230,27 +243,29 @@ const Messages = () => {
                 )
               )}
               <div className="flex-grow"></div>
-              <div className="bg-[#c2c2c2] p-4 rounded-xl">
-                <div className="relative flex w-full flex-wrap items-stretch">
-                  <input
-                    type="text"
-                    value={inputMessage}
-                    onChange={(e) => setInputMessage(e.target.value)}
-                    className="relative m-0 -mr-0.5 block w-[1px] min-w-0 flex-auto rounded-l border border-solid border-[#4b2848] bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:text-neutral-700 focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:focus:border-primary"
-                    aria-describedby="button-addon1"
-                  />
-                  <button
-                    className="relative z-[2] flex items-center rounded-r bg-primary px-6 py-2.5 text-xs font-medium uppercase leading-tight text-[#4b2848] shadow-md transition duration-150 ease-in-out hover:bg-primary-700 hover:shadow-lg focus:bg-primary-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-primary-800 active:shadow-lg"
-                    type="button"
-                    onClick={handleSendMessage}
-                    id="button-addon1"
-                    data-te-ripple-init
-                    data-te-ripple-color="light"
-                  >
-                    <span className="material-symbols-outlined">send</span>
-                  </button>
-                </div>
-              </div>
+              
+                <ChatInput>
+                  <div className="relative flex w-full flex-wrap items-stretch">
+                    <input
+                      type="text"
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      className="relative m-0 -mr-0.5 block w-[1px] min-w-0 flex-auto rounded-l border border-solid border-[#4b2848] bg-transparent bg-clip-padding px-3 py-[0.25rem] text-base font-normal leading-[1.6] text-neutral-700 outline-none transition duration-200 ease-in-out focus:z-[3] focus:border-primary focus:text-neutral-700 focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)] focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:focus:border-primary"
+                      aria-describedby="button-addon1"
+                    />
+                    <button
+                      className="relative z-[2] flex items-center rounded-r bg-primary px-6 py-2.5 text-xs font-medium uppercase leading-tight text-[#4b2848] shadow-md transition duration-150 ease-in-out hover:bg-primary-700 hover:shadow-lg focus:bg-primary-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-primary-800 active:shadow-lg"
+                      type="button"
+                      onClick={handleSendMessage}
+                      id="button-addon1"
+                      data-te-ripple-init
+                      data-te-ripple-color="light"
+                    >
+                      <span className="material-symbols-outlined">send</span>
+                    </button>
+                  </div>
+                </ChatInput>
+              
             </div>
           ) : (
             <div className="flex flex-col flex-grow p-4 overflow-auto">
@@ -264,7 +279,7 @@ const Messages = () => {
               <div
                 key={profile.id}
                 onClick={() => joinChatroom(profile.id, profile.members[0].id, profile.members[0].display_pic)}
-                className="relative flex items-center rounded-lg m-1 cursor-pointer bg-gray-300 p-2 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]"
+                className="flex items-center rounded-lg m-1 cursor-pointer bg-gray-300 p-2 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]"
               >
                 {profile.unseen_message_count > 0 && (
                   <div className="absolute top-0 left-0 bg-red-500 text-white px-2 py-1 rounded-full w-6 h-6 flex items-center justify-center">
