@@ -119,18 +119,23 @@ const LogoutButton = styled.button`
 `;
 
 
-// import Create from './navigateTo/Create';
-const NavBar = () => {
+const NavBar = ({ updatePostList }) => {
     const navigate = useNavigate()
-    const [show,setShow] = useState(false)
+    // const [show,setShow] = useState(false)
     const [showSearch , setShowSearch] = useState(false)
     const [showNotifications , setShowNotifications] = useState(false)
     const [notification , setNotification] = useState([])
+    const [showPostModal , setShowPostModal] = useState(false)
 
     const {user,isAuthenticated , loading} = useSelector(state => state.user)
     const dispatch = useDispatch()
 
     const email = isAuthenticated ? user?.email:''
+
+    const handleNewPostCreated = (newPostData) => {
+      updatePostList(newPostData);
+      setShowPostModal(false);
+    };
 
     useEffect(() => {
       const fetchData = async () =>{
@@ -179,10 +184,10 @@ const NavBar = () => {
     }
 
     const createPost = () =>{
-      if (show === true ) {
-        setShow(false)
+      if (showPostModal === true ) {
+        setShowPostModal(false)
       } else {
-        setShow(true)
+        setShowPostModal(true)
       }
     }
 
@@ -251,7 +256,7 @@ const NavBar = () => {
           <span>Logout</span>
         </LogoutButton>
       </ButtonContainer>
-      <PostModal isVisible={show} onClose={() => setShow(false)} />
+      <PostModal isVisible={showPostModal} onClose={() => setShowPostModal(false)} updatePostList={updatePostList} />
       <Search isVisible={showSearch} onClose={closeSearch} />
       <Notifications isVisible={showNotifications} onClose={()=>setShowNotifications(false)} notification={notification} removeNotification={removeNotification}/>
     </NavBarWrapper>

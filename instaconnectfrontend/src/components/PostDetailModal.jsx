@@ -31,6 +31,7 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
     const [showPostDetailModal,setShowPostDetailModal] = useState(false)
     const [initialCaption, setInitialCaption] = useState('');
     const [initialImage, setInitialImage] = useState(null);
+    const [isPortrait,setIsPortrait] = useState('')
     
     const updateCaption = (newCaption) => {
       setInitialCaption(newCaption);
@@ -54,7 +55,7 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
       if (postID) {
         fetchData();
       }
-    }, [postID,updateCaption]);
+    }, [postID]);
     
     if( !isVisible ) return null;
 
@@ -159,17 +160,22 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
         <button className="text-white text-xl place-self-end" onClick={onClose}>
           x
         </button>
-        <div className="bg-white p-2 rounded">
+        <div className="bg-white p-2 rounded" >
           <div className="flex content-between shadow-lg flex-grow">
             <div className="flex flex-wrap content-center justify-center rounded-r-md w-1/2">
               <img
                 className="w-100 bg-center bg-no-repeat bg-cover rounded-l-md"
                 src={`${BASE_URL}` + post?.img}
                 alt="post_here"
+                onLoad={(event) => {
+                  const img = event.target;
+                  const ratio = img.width < img.height ? '255px' : '85px';
+                  setIsPortrait(ratio)
+                }}
               />
             </div>
 
-            <div className="flex flex-wrap content-between justify-start p-4 rounded-l-md bg-white w-1/2 overflow-y-auto ">
+            <div className="flex flex-wrap content-between justify-start p-4 rounded-l-md bg-white w-1/2 overflow-y-auto " style={{position:'relative'}}>
               <div className="w-full">
                 <div className="flex items-center space-x-4 border-b-2  border-gray-100">
                   <div className="flex-shrink-0">
@@ -189,10 +195,10 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
                   </div>
                 </div>
                 <br />
-                <div className="space-x-4 border-b-2  border-gray-100">
+                <div className="space-x-4 border-b-2  border-gray-100" style={{minHeight:'205px'}}>
                   <label htmlFor="input-group-1" className="block mb-2 text-sm font-medium text-gray-500 ">Comments</label>
 
-                  <ul className="max-w-md divide-y divide-gray-200 dark:divide-gray-700  max-h-20 overflow-y-auto">
+                  <ul className="max-w-md divide-y divide-gray-200 dark:divide-gray-700 overflow-y-auto" style={{maxHeight:isPortrait}}>
                     {comments ? comments.map((cmnt)=>(
                     <li key={cmnt.id} className="border-none">
 
@@ -224,77 +230,79 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
                   </ul>
                 </div>
                 <br />
-                <div className="flex items-center space-x-4 mb-5">
-                  <div className="p-0">
-                    <div className="flex flex-row gap-4">
-                      {post?.likes?.includes(user?.id) ? (
-                        <button
-                          className="inline-block p-0 text-xs font-medium leading-normal"
-                          type="button"
-                          data-te-ripple-init
-                          data-te-ripple-color="light"
-                          onClick={() => {
-                            toggleLikePost(post.id, true);
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            height="28"
-                            viewBox="0 -960 960 960"
-                            width="28"
+                <div className='interaction' style={{position:'absolute',bottom:'0',left:'10',width:'90%'}}>
+                  <div className="flex items-center space-x-4">
+                    <div className="p-0">
+                      <div className="flex flex-row gap-4">
+                        {post?.likes?.includes(user?.id) ? (
+                          <button
+                            className="inline-block p-0 text-xs font-medium leading-normal"
+                            type="button"
+                            data-te-ripple-init
+                            data-te-ripple-color="light"
+                            onClick={() => {
+                              toggleLikePost(post.id, true);
+                            }}
                           >
-                            <path
-                              d="m480-121-41-37q-106-97-175-167.5t-110-126Q113-507 96.5-552T80-643q0-90 60.5-150.5T290-854q57 0 105.5 27t84.5 78q42-54 89-79.5T670-854q89 0 149.5 60.5T880-643q0 46-16.5 91T806-451.5q-41 55.5-110 126T521-158l-41 37Z"
-                              style={{ fill: "red" }}
-                            />
-                          </svg>
-                        </button>
-                      ) : (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              height="28"
+                              viewBox="0 -960 960 960"
+                              width="28"
+                            >
+                              <path
+                                d="m480-121-41-37q-106-97-175-167.5t-110-126Q113-507 96.5-552T80-643q0-90 60.5-150.5T290-854q57 0 105.5 27t84.5 78q42-54 89-79.5T670-854q89 0 149.5 60.5T880-643q0 46-16.5 91T806-451.5q-41 55.5-110 126T521-158l-41 37Z"
+                                style={{ fill: "red" }}
+                              />
+                            </svg>
+                          </button>
+                        ) : (
+                          <button
+                            className="inline-block p-0 text-xs font-medium leading-normal"
+                            type="button"
+                            data-te-ripple-init
+                            data-te-ripple-color="light"
+                            onClick={() => {
+                              toggleLikePost(post.id, true);
+                            }}
+                          >
+                            <span className="material-symbols-outlined">
+                              <FavoriteBorderIcon />
+                            </span>
+                          </button>
+                        )}
                         <button
                           className="inline-block p-0 text-xs font-medium leading-normal"
                           type="button"
                           data-te-ripple-init
                           data-te-ripple-color="light"
-                          onClick={() => {
-                            toggleLikePost(post.id, true);
-                          }}
+                          onClick={highlightForm}
                         >
                           <span className="material-symbols-outlined">
-                            <FavoriteBorderIcon />
+                            <ChatBubbleOutlineIcon />
                           </span>
                         </button>
-                      )}
-                      <button
-                        className="inline-block p-0 text-xs font-medium leading-normal"
-                        type="button"
-                        data-te-ripple-init
-                        data-te-ripple-color="light"
-                        onClick={highlightForm}
-                      >
-                        <span className="material-symbols-outlined">
-                          <ChatBubbleOutlineIcon />
-                        </span>
-                      </button>
 
-                      <span className="material-symbols-outlined"><ShareIcon /></span>
-                      <DropdownOptions post={post} handleDeletePost={handleDeletePost} handleUpdatePost={handleUpdatePost} handleReportPost={handleReportPost} />
+                        <span className="material-symbols-outlined"><ShareIcon /></span>
+                        <DropdownOptions post={post} handleDeletePost={handleDeletePost} handleUpdatePost={handleUpdatePost} handleReportPost={handleReportPost} />
 
-                    </div>
-                    <p>{post?.likes_count ?? 0}&nbsp;likes</p>
-                    
-                  </div>
-                </div>
-                
-                <form className="" onSubmit={postComment}>   
-                  <label htmlFor="search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-                  <div className="relative">
-                      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                      <img className="w-8 h-10 text-gray-500 dark:text-gray-400" aria-hidden="true" src={`${BASE_URL}` + post?.author?.display_pic} alt='user'></img>
                       </div>
-                      <input ref={inputRef} value={comment} onChange={(e)=>setComment(e.target.value)} type="search" id="search" className="block w-full pt-4 pb-4 pl-5 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Your comment here.!" required />
-                      <button type="submit" className="text-white absolute right-2.5 bottom-3.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Post</button>
+                      <p>{post?.likes_count ?? 0}&nbsp;likes</p>
+                      
+                    </div>
                   </div>
-              </form>
+                  
+                  <form className="" onSubmit={postComment}>   
+                    <label htmlFor="search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                    <div className="relative">
+                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <img className="w-8 h-10 text-gray-500 dark:text-gray-400" aria-hidden="true" src={`${BASE_URL}` + post?.author?.display_pic} alt='user'></img>
+                        </div>
+                        <input ref={inputRef} value={comment} onChange={(e)=>setComment(e.target.value)} type="search" id="search" className="block w-full pt-4 pb-4 pl-5 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Your comment here.!" required/>
+                        <button type="submit" className="text-white absolute right-2.5 bottom-3.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Post</button>
+                    </div>
+                </form>
+              </div>
               </div>
             </div>
           </div>

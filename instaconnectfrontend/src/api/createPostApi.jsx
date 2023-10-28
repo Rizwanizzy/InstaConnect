@@ -20,10 +20,12 @@ const createPostApi = async (content, postImage) => {
             return response.data;
           } else {
             console.log(response.error);
+            return null
           }
     }
     catch(error){
         console.log(error);
+        return null
     }
 }
 

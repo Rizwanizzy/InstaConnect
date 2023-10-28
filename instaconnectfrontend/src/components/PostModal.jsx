@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import createPostApi from '../api/createPostApi';
 import { BASE_URL } from '../utils/constants';
 
-const PostModal = ({ isVisible, onClose, postID, initialCaption, initialImage ,updateCaption }) => {
+const PostModal = ({ isVisible, onClose, postID, initialCaption, initialImage ,updateCaption , updatePostList}) => {
   const [postImage, setPostImage] = useState(initialImage || null);
   const [caption, setCaption] = useState(initialCaption || '');
   const [previewImageUrl, setPreviewImageUrl] = useState(initialImage || null);
@@ -50,7 +50,9 @@ const PostModal = ({ isVisible, onClose, postID, initialCaption, initialImage ,u
     } else {
       try {
         onClose();
-        await createPostApi(caption, postImage);
+        const newPostData = await createPostApi(caption, postImage);
+        console.log('newpostdata after creation',newPostData)
+        updatePostList(newPostData)
         toast.success('Post Created successfully', {
           position: 'top-center',
         });

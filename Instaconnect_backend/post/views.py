@@ -139,8 +139,10 @@ class PostDetail(APIView):
         try:
             post = Posts.objects.get(id=pk)
             serializer = PostSerializer(post)
+            print('retreive post details')
             return Response(serializer.data,status=status.HTTP_200_OK)
         except:
+            print('couldnt retreive post details')
             return Response(status=status.HTTP_404_NOT_FOUND)
         
 

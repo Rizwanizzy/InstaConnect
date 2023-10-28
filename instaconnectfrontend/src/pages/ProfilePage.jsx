@@ -15,6 +15,7 @@ import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 import checkfollowstatusapi from '../api/checkfollowstatusapi';
 import createChatRoomApi from '../api/createChatRoomApi';
+import PostModal from '../components/PostModal';
 
 const UserPage = styled.div`
   display: flex;
@@ -159,6 +160,12 @@ const ProfilePage = () => {
 
   const param = useParams()
   const email = param.email
+  
+  // Function to add a new post to the posts state
+  const updatePostList = (newPostData) => {
+    // Instead of replacing the posts array, you can update it with the new post.
+    setPosts([newPostData, ...posts]);
+  };
 
   useEffect(() =>{
     const fetchData = async () =>{
@@ -179,7 +186,7 @@ const ProfilePage = () => {
       }
     }
     fetchData()
-  },[email,showPostDetailModal])
+  },[email,showPostDetailModal,posts])
 
   useEffect(() => {
     if (isAuthenticated && profile && user) {
@@ -201,6 +208,7 @@ const ProfilePage = () => {
     }
   }, [profile]);
 
+  
 
   if (!isAuthenticated &&  !loading && user === null){
     return <Navigate to='/' />
@@ -247,7 +255,7 @@ const ProfilePage = () => {
   return (
     <UserPage>
       <NavContainer>
-        <NavBar />
+        <NavBar updatePostList={updatePostList}/>
       </NavContainer>
       <ProfileContentWrapper>
         <ProfileContainer>
@@ -331,31 +339,26 @@ const ProfilePage = () => {
         </ProfileContainer>
 
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2em' }}>
-          <hr style={{ width: '80%' , border: '2px solid black' }} />
+          <hr style={{ width: '80%' , border: '1.5px solid black' ,zIndex:'-1' }} />
         </div>
 
 
 
         {/* <div className="mt-10 py-10 border-t border-blueGray-200 text-center"> */}
-        <ImagesWrapper> {/* Wrap the ImagesContainer */}
-          <ImagesContainer>
-            {posts ? (
-              posts.map((post) => (
-                <ImageWrapper
-                  key={post.id}
-                  onClick={() => handleViewPost(post.id)}
-                >
-                  <img
-                    src={`${BASE_URL}${post.img}`}
-                    alt="post"
-                  />
-                </ImageWrapper>
-              ))
-            ) : (
-              <p>No posts available.</p>
-            )}
-          </ImagesContainer>
-        </ImagesWrapper> {/* End of ImagesContainer */}
+        <ImagesContainer>
+          {posts && posts.length > 0 ? (
+            posts.map((post) => (
+              <ImageWrapper
+                key={post.id}
+                onClick={() => handleViewPost(post.id)}
+              >
+                <img src={`${BASE_URL}${post.img}`} alt="post" />
+              </ImageWrapper>
+            ))
+          ) : (
+            <h4>No posts available.</h4>
+          )}
+        </ImagesContainer>
         
       </ProfileContentWrapper>
     </UserPage>
