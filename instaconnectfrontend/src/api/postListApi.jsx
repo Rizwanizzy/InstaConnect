@@ -1,10 +1,13 @@
 import axiosInstance from '../utils/axiosInstance'
 
-const postListApi = async () =>{
+const postListApi = async (userToken) =>{
     try{
         const response = await axiosInstance({
             url:'/post/home/',
             method:'GET',
+            headers: {
+                Authorization: `Bearer ${userToken}`
+            }
         })
         if(response.status === 200){
             console.log('homepage',response.data)

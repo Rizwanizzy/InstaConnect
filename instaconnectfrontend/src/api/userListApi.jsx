@@ -14,6 +14,9 @@ const userListApi = async () => {
         })
         if (response.status === 200) {
             console.log(response.data)
+            toast.success('Fetching data from database',{
+                position:'top-center'
+            })
             return response.data
         } else {
             console.error('Failed to fetch user details:', response.statusText);

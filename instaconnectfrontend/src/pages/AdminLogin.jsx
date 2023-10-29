@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate,Link } from 'react-router-dom'
-import { resetRegistered,login } from '../redux/slice'
+import { resetRegistered,login, getUser } from '../redux/slice'
 import {toast} from 'react-toastify'
 import appStores from '../images/appstore.png'
 import loginImage1 from '../images/network.jpg'
@@ -34,15 +34,34 @@ const AdminLogin = () => {
         setFormData({...formData, [e.target.name]:e.target.value})
     }
 
-    const handleLogin = async (e) =>{
-        e.preventDefault()
+    const handleLogin = (e) => {
+        e.preventDefault();
         try {
-            dispatch(login({email,password}))
-            navigate('/admin-dashboard')
-        } catch(error) {
-            toast.error('Admin Login failed ...')
+          dispatch(login({ email, password })).then((response) => {
+            if (login.fulfilled.match(response)) {
+              const token = response.payload.access;
+              localStorage.setItem('access_token', token);
+      
+              // Fetch user data after successful login
+              dispatch(getUser(token)).then((userResponse) => {
+                const user = userResponse.payload; // Assuming this contains user data
+                console.log('while login users details',user.is_superuser)
+                if (user.is_superuser) {
+                  // Redirect to the admin dashboard for superusers
+                  navigate('/admin-dashboard');
+                } else {
+                  // Redirect to the user dashboard or login page for regular users
+                  navigate('/'); // Replace with your user dashboard URL
+                }
+              });
+            } else {
+              toast.error('Admin Login failed ...');
+            }
+          });
+        } catch (error) {
+          toast.error('Admin Login failed ...');
         }
-    }
+      };
 
     useEffect(() =>{
         if(registered) dispatch(resetRegistered())

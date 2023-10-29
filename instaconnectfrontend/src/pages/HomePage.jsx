@@ -106,10 +106,12 @@ const HomePage = () => {
   const [initialCaption, setInitialCaption] = useState('');
   const [initialImage, setInitialImage] = useState(null);
 
+  const access_token = localStorage.getItem('access_token')
   useEffect(() =>{
     const fetchData = async () => {
       try {
-        const data = await postListApi()
+        console.log('user details',access_token)
+        const data = await postListApi(access_token)
         setPosts(data.posts)
         setUsersNotFollowing(data.users_not_following)
         console.log('posts inside home page useEffect',data)
@@ -121,7 +123,7 @@ const HomePage = () => {
     if (user && !loading) {
       fetchData()
     }
-  }, [user,showPostModal,showPostDetailModal,loading])
+  }, [user,loading])
 
   const fetchData = async () =>{
     try {
@@ -133,13 +135,6 @@ const HomePage = () => {
       console.error(error)
     }
   }
-
-  useEffect(() => {
-    // Only fetch data when the user is available and not loading
-    if (user && !loading) {
-      fetchData();
-    }
-  }, [user, loading]);
 
   const toggleShowAllUsers = () => {
     setShowAllUsers(!showAllUsers)

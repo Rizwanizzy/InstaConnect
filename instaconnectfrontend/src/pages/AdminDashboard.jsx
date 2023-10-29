@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import userListApi from '../api/userListApi';
 import postsListApi from '../api/postsListApi';
 import reportedPostsListApi from '../api/reportedPostsListApi';
+import { useSelector } from 'react-redux';
 
 export const Body = styled.div`
   margin: 0;
@@ -173,6 +174,7 @@ const AdminDashboard = () => {
     const [totalReportedPosts,setTotalReportedPosts] = useState([])
     const [chartData, setChartData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const {user , loading , isAuthenticated ,isSuperuser } = useSelector(state =>state.user)
 
     useEffect(() => {
       const fetchDetails = async () => {
@@ -189,6 +191,7 @@ const AdminDashboard = () => {
           console.log('Users:', users);
           console.log('Posts:', posts);
           console.log('Reported Posts:', reportedPosts);
+          console.log('superuser:',user,'isAuthenticated:',isAuthenticated,'isSuperuser:',isSuperuser)
           
           setChartData([
             { name: 'Total Users', value: users.length },
@@ -199,6 +202,7 @@ const AdminDashboard = () => {
           setIsLoading(false)
 
         } catch (error) {
+          console.log('catch is working')
           console.error(error);
           setIsLoading(false)
         }
@@ -206,6 +210,7 @@ const AdminDashboard = () => {
     
       fetchDetails()
     }, []);
+
 
     const data = [
         {
@@ -273,10 +278,6 @@ const AdminDashboard = () => {
           <MainTitle className="main-title">
             <h3>DASHBOARD</h3>
           </MainTitle>
-          {isLoading ? (
-              // Display a loading indicator while fetching data
-              <div>Loading...</div>
-          ) : (
           <MainCards className="main-cards">
             <FirstCard className="card">
               <CardInner className="card-inner">
@@ -306,7 +307,6 @@ const AdminDashboard = () => {
               <h1>{totalReportedPosts?.length || 0}</h1>
             </ThirdCard>
           </MainCards>
-          )}
           <Charts className="charts">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
