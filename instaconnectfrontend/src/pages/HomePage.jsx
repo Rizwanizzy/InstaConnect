@@ -29,10 +29,11 @@ const PageContainer = styled.div`
 
 const NavContainer = styled.div`
   width: 16.5%;
-  background-color: #f0f0f0;
+  background-color: #faf7f4;
   position:fixed;
   top:0;
   bottom:0;
+  border-right:double
 `;
 
 const ContentContainer = styled.div`
@@ -41,7 +42,9 @@ const ContentContainer = styled.div`
   flex-grow: 1;
   padding: 20px;
   padding-left:16.5%;
-  height:100%;
+  min-height:100%;
+  height:fit-content;
+  background-color:#faf7f4
 `;
 
 const SuggessionsContainer = styled.div`
@@ -333,6 +336,7 @@ const HomePage = () => {
             )}
         </div>
         <SuggessionsContainer className='suggessions w-3/9'>
+          
           <SuggesstionsTitle className="suggesstions__title">Suggesstions for you</SuggesstionsTitle>
           <div className="suggesstions_usernames">
             {usersNotFollowing ? showAllUsers ? usersNotFollowing.map((users) =>(
@@ -397,8 +401,8 @@ const HomePage = () => {
                   {/* Render the first user here */}
               </SuggesstionUsername>
               )}
-            
           </div>
+          
           {usersNotFollowing && usersNotFollowing.length > initialUsersToDisplay && (
               <button className='font-bold cursor-pointer' style={{ color: 'gray' }} onClick={toggleShowAllUsers}>
                 {showAllUsers ? 'Show Less' : 'Show More'}

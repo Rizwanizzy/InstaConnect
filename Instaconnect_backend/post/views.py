@@ -271,10 +271,10 @@ class MyNetworkView(APIView):
 
     def get(self,request):
         current_user = self.request.user
-        followers_query = UserAccount.objects.filter(Q(followers_following=current_user) & ~Q(id=current_user.id))
-        following_query = UserAccount.objects.filter(Q(following_follower=current_user) & ~Q(id=current_user.id))
-        followers = UserSerializer(following_query, many = True)
-        following = UserSerializer(followers_query,many=True)
+        followers_query = UserAccount.objects.filter(Q(followers__following=current_user) & ~Q(id=current_user.id))
+        following_query = UserAccount.objects.filter(Q(following__follower=current_user) & ~Q(id=current_user.id))
+        followers = UserSerializer(following_query, many=True)
+        following = UserSerializer(followers_query, many=True)
         context={
             'followers':followers.data,
             'following':following.data

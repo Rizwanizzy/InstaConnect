@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Form from 'react-bootstrap/Form';
-import {Tab,initTE} from "tw-elements";
 import Modal from 'react-bootstrap/Modal';
-import SearchApi from '../api/SearchApi';
+import {Tab,initTE} from "tw-elements";
 import {MDBTable, MDBTableBody } from 'mdb-react-ui-kit';
 import { BASE_URL } from '../utils/constants';
 import styled, { createGlobalStyle } from 'styled-components';
-import { NavLink, useNavigate } from 'react-router-dom';
-import PostDetailModal from './PostDetailModal';
-import notificationSeenApi from '../api/notificationSeenApi';
+import { NavLink, useNavigate ,Link } from 'react-router-dom';
+import myNetworkApi from '../api/myNetworkApi';
+import { useSelector } from 'react-redux';
 
 const GlobalStyle = createGlobalStyle`
   .scrollbar {
@@ -52,6 +51,7 @@ const CenteredTable = styled(MDBTable)`
 
 const modalBodyStyle = {
   maxHeight: '650px',
+  borderStyle:'none'
 };
 
 const contentStyle = {
@@ -70,94 +70,135 @@ const StyledTableRow = styled.tr`
     }
   }
 `;
+
 const Networkmodal = ({ isVisible, onClose }) => {
 
-  initTE({Tab})
+  initTE({ Tab })
   const [followers,setfollowers] =useState([])
   const [following,setfollowing] = useState([])
-  const [showPostDetailModal,setShowPostDetailModal] = useState(false)
+  const {user} = useSelector(state => state.user)
+  const [activeTab, setActiveTab] = useState('following')
+
+  const access_token = localStorage.getItem('access_token')
+  useEffect(() => {
+    console.log('before networkapi working')
+    const fetchData = async () => {
+      try {
+        console.log('before networkapi working')
+        const data = await myNetworkApi(access_token)
+        console.log('after networkapi working')
+        setfollowers(data.followers)
+        setfollowing(data.following)
+      } catch (error) {
+        console.error(error)
+      }
+      
+    }
+    if (user) {
+      fetchData()
+    }
+  },[user])
 
   if (!isVisible) return null
 
-  const handleClose = () => {
-     onClose();
+  const handleModalClose = (e) => {
+    onClose()
   };
 
-  const closePostModal = () =>{
-    setShowPostDetailModal(false)
-  }
-
-  const getNotificationMessage = (notification) => {
-    const { notification_type , post , comment } = notification
-
-    if (post) {
-        if ( notification_type === 'comment' ){
-            return 'commented on your post'
-        } else if ( notification_type === 'like') {
-            return 'liked on your post'
-        } else if ( notification_type === 'post') {
-            return 'created a new post'
-        } else if ( notification_type === 'blocked') {
-            return 'blocked your post'
-        }
-    } else if (comment) {
-        if ( notification_type === 'comment') {
-            return 'replied to your comment'
-        }
-    }
-    return 'has started following you'
-  }
-
-  const onClick = async (notificationId , email , notificationType , postId) =>{
-    try {
-        await notificationSeenApi(notificationId)
-        removeNotification(notificationId)
-        onClose()
-        if (notificationType === 'like' || notificationType === 'comment' || notificationType === 'post') {
-            <PostDetailModal isVisible={showPostDetailModal} onClose={closePostModal} postID={postId} />
-        } else if (notificationType === 'blocked' ) {
-            console.log('blocked')
-        } else {
-            navigate(`/profile/${email}`)
-        }
-    } catch (error) {
-        console.error(error)
-    }
-  }
 
   return (
     <div>
       <GlobalStyle />
-      <Modal show={isVisible} onHide={handleClose}>
+      <Modal show={isVisible} onHide={handleModalClose} closeButton>
         <Modal.Header closeButton>
-          <Modal.Title>Notifications</Modal.Title>
+          <Modal.Title>My Connections</Modal.Title>
         </Modal.Header>
-        <Modal.Body style={modalBodyStyle}>
-
+        <Modal.Body style={modalBodyStyle}>  
           <div className="overflow-auto scrollbar-ripe-malinka" style={contentStyle}>
             <CenteredTable>
-              <MDBTable align='middle' style={{ borderWidth: '0px',marginTop:'-10px' }}>
+              <MDBTable align='middle' style={{ borderWidth: '0px',marginTop:'-35px' }}>
                 <MDBTableBody>
-                    {notification && notification?.length > 0 ? (
-                        notification.map((note,index) => (
-                            <StyledTableRow >
-                                <td key={index}>
-                                    <p
-                                        className="block w-full whitespace-nowrap bg-transparent px-4 py-2 text-sm public hover:bg-neutral-100 active:no-underline cursor-pointer"
-                                        onClick={() => onClick(note.id, note.from_user.email, note.notification_type, note.post?.id )}
-                                        data-te-dropdown-item-ref
-                                    >
-                                        {note.notification_type === "blocked"
-                                            ? "Admin blocked you post"
-                                            : `${note.from_user.first_name} ${note.from_user.last_name} ${getNotificationMessage(note)}`}
-                                    </p>
-                                </td>
-                            </StyledTableRow>
-                        ))
-                    ):(
-                        <p>No notifications</p>
-                    )}
+                <ul
+                  className="mb-2 flex list-none flex-row flex-wrap border-b-0 pl-0"
+                  role="tablist"
+                  data-te-nav-ref style={{ borderBottom: 'none' }}>
+                  <li role="presentation" className={`flex-auto text-center ${activeTab === 'followers' ? 'active' : ''}`} onClick={() => setActiveTab('followers')}>
+                    <Link
+                      href="#tabs-profile01"
+                      className=""
+                      data-te-toggle="pill"
+                      data-te-target="#tabs-profile01"
+                      data-te-nav-active
+                      role="tab"
+                      aria-controls="tabs-profile01"
+                      aria-selected="true"
+                      style={{textDecoration:'none',borderBottom: 'none'}}><p style={{borderWidth:'0' ,fontWeight: 'bold' , marginBottom:'-10px' , color:'black' , textDecoration: activeTab === 'followers' ? 'underline' : 'none'}} className='text-bold'>Followers</p></Link>
+                  </li>
+                  <li role="presentation" className={`flex-auto text-center ${activeTab === 'following' ? 'active' : ''}`} onClick={() => setActiveTab('following')}>
+                    <Link
+                      href="#tabs-home01"
+                      className=""
+                      data-te-toggle="pill"
+                      data-te-target="#tabs-home01"
+                      role="tab"
+                      aria-controls="tabs-home01"
+                      aria-selected="false"
+                      style={{textDecoration:'none',borderBottom: 'none'}}><p style={{borderWidth:'0' ,fontWeight: 'bold' , marginBottom:'-10px' ,color:'black' , textDecoration: activeTab === 'following' ? 'underline' : 'none'}} className='text-bold'>Following</p></Link>
+                  </li>
+                  
+                </ul>
+                <div className="mb-6" style={{borderStyle:'none'}}>
 
+                  <StyledTableRow className="hidden opacity-0 transition-opacity duration-150 ease-linear data-[te-tab-active]:block" id="tabs-profile01" role="tabpanel" aria-labelledby="tabs-profile-tab01">
+                    {following.length > 0 && following ? following.map((item) => (
+                      <NavLink to={`/profile/${item.email}`} style={{ textDecoration: 'none' }}>
+                        <td>
+                            <div className='d-flex align-items-center'>
+                              <img
+                                  src={item.display_pic ? `${BASE_URL}${item.display_pic}` : '../images/default_picture.png' }
+                                  alt={item.username}
+                                  style={{ width: '45px', height: '45px' }}
+                                  className='rounded-circle'
+                              />
+                              <div className='ms-3'>
+                                <p className='fw-bold mb-0 text-black'>{item.username}</p>                            
+                                <p className='text-muted mb-1'>{item.first_name} {item.last_name}</p>
+                              </div>
+                            </div>
+                        </td>
+                      </NavLink>
+                    
+                    )):(
+                      <p>No followers</p>
+                    )}
+                  </StyledTableRow>
+
+                  <StyledTableRow className="hidden opacity-100 transition-opacity duration-150 ease-linear data-[te-tab-active]:block" id="tabs-home01" role="tabpanel" aria-labelledby="tabs-home-tab01" data-te-tab-active>
+                    {followers.length > 0 && followers ? followers.map((item) => (
+                      <NavLink to={`/profile/${item.email}`} style={{ textDecoration: 'none' }}>
+                        <td>
+                            <div className='d-flex align-items-center'>
+                              <img
+                                  src={item.display_pic ? `${BASE_URL}${item.display_pic}` : '../images/default_picture.png' }
+                                  alt={item.username}
+                                  style={{ width: '45px', height: '45px' }}
+                                  className='rounded-circle'
+                              />
+                              <div className='ms-3'>
+                                <p className='fw-bold mb-0 text-black'>{item.username}</p>                            
+                                <p className='text-muted mb-1'>{item.first_name} {item.last_name}</p>
+                              </div>
+                            </div>
+                        </td>
+                      </NavLink>
+                    
+                    )):(
+                      <p>No following</p>
+                      
+                    )}
+                  </StyledTableRow>
+                  
+                </div>
                 </MDBTableBody>
               </MDBTable>
             </CenteredTable>

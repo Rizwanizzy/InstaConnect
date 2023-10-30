@@ -30,10 +30,11 @@ const PageContainer = styled.div`
 
 const NavContainer = styled.div`
   width: 16.5%;
-  background-color: #f0f0f0;
+  background-color: #faf7f4;
   position:fixed;
   top:0;
   bottom:0;
+  border-right:double
 `;
 
 const ContentContainer = styled.div`
@@ -43,6 +44,7 @@ const ContentContainer = styled.div`
   padding: 20px;
   padding-left:16.5%;
   height:100%;
+  background-color:#faf7f4
 `;
 
 const ExplorePage = () => {
@@ -55,11 +57,11 @@ const ExplorePage = () => {
     const [initialCaption, setInitialCaption] = useState('');
     const [initialImage, setInitialImage] = useState(null);
   
-
+    const access_token = localStorage.getItem('access_token')
     useEffect(() =>{
         const fetchData = async () =>{
             try {
-                const data = await postListAllApi()
+                const data = await postListAllApi(access_token)
                 setPosts(data)
             } catch (error){
                 console.error(error)
@@ -260,7 +262,7 @@ const ExplorePage = () => {
             </div>
           </div>
         </div>
-        )):<h1 className='flex justify-center align-middle'>Nothing to show here..!</h1>}
+        )):<h4 className="flex justify-center items-center">Nothing to show here..!</h4>}
       </div>
       
       </ContentContainer>

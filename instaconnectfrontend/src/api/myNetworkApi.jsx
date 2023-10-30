@@ -1,11 +1,14 @@
 
 import axiosInstance from "../utils/axiosInstance";
 
-const myNetworkApi = async (userId) => {
+const myNetworkApi = async (userToken) => {
     try {
       const response = await axiosInstance({
         url: '/post/network/',
         method: "GET",
+        headers: {
+          Authorization: `Bearer ${userToken}`
+        }
       });
       if (response.status === 200) {
         console.log("networks", response.data);

@@ -16,18 +16,21 @@ import axios from 'axios';
 import checkfollowstatusapi from '../api/checkfollowstatusapi';
 import createChatRoomApi from '../api/createChatRoomApi';
 import PostModal from '../components/PostModal';
+import Networkmodal from '../components/Networkmodal';
 
 const UserPage = styled.div`
   display: flex;
-  height: 80vh;
+  height: 100vh;
+  background-color:#faf7f4
 `;
 
 const NavContainer = styled.div`
   width: 16.5%;
-  background-color:#f0f0f0;
+  background-color:#faf7f4;
   top:0;
   bottom:0;
   position:fixed;
+  border-right:double
 `;
 
 const ProfileContentWrapper = styled.div`
@@ -35,7 +38,7 @@ const ProfileContentWrapper = styled.div`
   display: flex;
   flex-direction: column; /* Display children in a column */
   padding-left: 16.5%;
-  height : 50vh;
+  height : fit-content;
 `;
 
 const ProfileContainer = styled.div`
@@ -156,6 +159,7 @@ const ProfilePage = () => {
   const [showProfileModal,setShowProfileModal] =useState(false)
   const [showPostDetailModal,setShowPostDetailModal] = useState(false)
   const [isFollowingLocal,setIsFollowingLocal] = useState(false)
+  const [showNetworkModal , setShowNetworkModal] = useState(false)
   const dispatch = useDispatch()
 
   const param = useParams()
@@ -260,6 +264,7 @@ const ProfilePage = () => {
       <ProfileContentWrapper>
         <ProfileContainer>
             <ProfileUpdateModal isVisible={showProfileModal} onClose={() =>setShowProfileModal(false)} />
+            <Networkmodal isVisible={showNetworkModal} onClose={() =>setShowNetworkModal(false)} />
             <PostDetailModal isVisible={showPostDetailModal} onClose={() =>setShowPostDetailModal(false)} postID={postId}/>
             <label htmlFor="profilePhotoInput">
               <ProfilePhoto>
@@ -311,22 +316,58 @@ const ProfilePage = () => {
 
               </UserName>
               <div className="stats">
-                <div className="flex" style={{marginLeft:'-20px'}}>
+                <div className="flex" style={{ marginLeft: '-20px' }}>
                   <div className="lg:mr-4 p-3 text-center">
-                    <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-900">
-                    </span>
+                    <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-900"></span>
                     <CustomText style={{ fontWeight: 'bold' }} className="text-sm text-blueGray-400">{profile?.total_posts ?? "0"}  Posts</CustomText>
                   </div>
-                  <div className="mr-4 p-3 text-center">
-                    <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-900">
-                    </span>
-                    <CustomText style={{ fontWeight: 'bold' }} className="text-sm text-blueGray-400"> {profile?.following_count ?? "0"}  Followers</CustomText>
-                  </div>
-                  <div className="mr-4 p-3 text-center">
-                    <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-900">
-                    </span>
-                    <CustomText style={{ fontWeight: 'bold' }} className="text-sm text-blueGray-400">{profile?.follower_count ?? "0"} Following</CustomText>
-                  </div>
+                  {user?.email === profile?.email ? (
+                    <div className="flex">
+                      <div className="mr-4 p-3 text-center">
+                        <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-900"></span>
+                        <CustomText
+                          style={{ fontWeight: 'bold', cursor: 'pointer' }}
+                          className="text-sm text-blueGray-400"
+                          onClick={() => setShowNetworkModal(true)}
+                        >
+                          {profile?.following_count ?? "0"}  Followers
+                        </CustomText>
+                      </div>
+                      <div className="mr-4 p-3 text-center">
+                        <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-900"></span>
+                        <CustomText
+                          style={{ fontWeight: 'bold', cursor: 'pointer' }}
+                          className="text-sm text-blueGray-400"
+                          onClick={() => setShowNetworkModal(true)}
+                        >
+                          {profile?.follower_count ?? "0"} Following
+                        </CustomText>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex">
+                      <div className="mr-4 p-3 text-center">
+                        <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-900"></span>
+                        <CustomText
+                          style={{ fontWeight: 'bold' }}
+                          className="text-sm text-blueGray-400"
+                          onClick={() => setShowNetworkModal(false)}
+                        >
+                          {profile?.following_count ?? "0"}  Followers
+                        </CustomText>
+                      </div>
+                      <div className="mr-4 p-3 text-center">
+                        <span className="text-xl font-bold block uppercase tracking-wide text-blueGray-900"></span>
+                        <CustomText
+                          style={{ fontWeight: 'bold' }}
+                          className="text-sm text-blueGray-400"
+                          onClick={() => setShowNetworkModal(false)}
+                        >
+                          {profile?.follower_count ?? "0"} Following
+                        </CustomText>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               <p className="about">
@@ -338,8 +379,8 @@ const ProfilePage = () => {
             </div>
         </ProfileContainer>
 
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2em' }}>
-          <hr style={{ width: '80%' , border: '1.5px solid black' ,zIndex:'-1' }} />
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2em',marginBottom:'2em' }}>
+          <hr style={{ width: '80%' , border: '1.5px solid black' ,zIndex:'1' }} />
         </div>
 
 

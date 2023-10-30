@@ -16,10 +16,11 @@ const MessagePage = styled.div`
 
 const NavContainer = styled.div`
   width: 16.5%;
-  background-color:#f0f0f0;
+  background-color:#faf7f4;
   top:0;
   bottom:0;
   position:fixed;
+  border-right:double
 `;
 
 const MessageContentWrapper = styled.div`
@@ -27,6 +28,7 @@ const MessageContentWrapper = styled.div`
   display: flex;
   flex-direction: column; /* Display children in a column */
   padding-left: 16.5%;
+  background-color:#faf7f4
 `;
 
 const MessageContainer = styled.div`
