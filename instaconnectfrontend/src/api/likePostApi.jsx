@@ -5,7 +5,7 @@ const likePostApi = async (postId, fetchData) => {
     try {
       const accessToken = localStorage.getItem('access_token');
       let body = {}
-      const response = await axios.post(`${BASE_URL}/post/like/${postId}/`,body,{
+      const response = await axios.post(`${BASE_URL}/api/post/like/${postId}/`,body,{
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',

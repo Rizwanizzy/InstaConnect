@@ -3,7 +3,7 @@ import { BASE_URL } from "../utils/constants"
 
 const SearchApi = async (inputValue) => {
   try {
-    const response =await axios.get(`${BASE_URL}/post/search-request/`,{
+    const response =await axios.get(`${BASE_URL}/api/post/search-request/`,{
         params:{q:inputValue}
     })
 

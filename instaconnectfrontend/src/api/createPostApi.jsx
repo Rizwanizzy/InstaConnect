@@ -9,7 +9,7 @@ const createPostApi = async (content, postImage) => {
         formData.append('body', content);
         formData.append('img', postImage);
 
-        const response = await axios.post(`${BASE_URL}/post/create-post/`, formData, {
+        const response = await axios.post(`${BASE_URL}/api/post/create-post/`, formData, {
             headers: {
               Accept: 'application/json',
               Authorization: `Bearer ${accessToken}`,
