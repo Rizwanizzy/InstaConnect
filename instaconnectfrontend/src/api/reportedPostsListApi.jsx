@@ -4,7 +4,7 @@ import { BASE_URL } from "../utils/constants";
 const reportedPostsListApi = async () => {
     try {
         const accessToken = localStorage.getItem('access_token')
-        const response = await axios.get(`${BASE_URL}/api/reportedposts/`,{
+        const response = await axios.get(`${BASE_URL}/reportedposts/`,{
             headers:{
                 Accept:'application/json',
                 'Content-Type':'application/json',

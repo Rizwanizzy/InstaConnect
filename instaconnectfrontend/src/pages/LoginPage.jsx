@@ -66,66 +66,64 @@ const LoginPage = () => {
     }
 
   return (
-    <div className="container">
-      <div className="row mt-5">
-        <h2 className="font-script">Instaconnect</h2>
-        <div className="col-md-6 mt-2">
-          <img src={loginImage1} alt="login Image" className="img-fluid" />
-        </div>
-        {loading ? (
-            <Loading />
-        ):(
-        <div className="col-md-6 mt-5">
-            <div className="d-flex flex-column align-items-center justify-content-center">
+        <div className="container">
+        <div className="row mt-5">
+            <h2 className="font-script">Instaconnect</h2>
+            <div className="col-md-6 mt-2">
+            <img src={loginImage1} alt="login Image" className="img-fluid" />
+            </div>
+            
+            <div className="col-md-6 mt-5">
+                <div className="d-flex flex-column align-items-center justify-content-center">
 
-                <form onSubmit={handleLogin} className="mt-4 " style={{width:'60%'}}>
-                    <div className="mb-3">
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={email}
-                        onChange={onChange}
-                        className="form-control"
-                        placeholder="Email"
-                        required
-                    />
-                    <div className="text-sm mt-3 mb-3 float-right">
-                        <Link
-                        to={'/forgot-password'}
-                        className="font-semibold text-indigo-600 hover:text-indigo-500 text-decoration-none"
-                        >
-                        Forgot password?
-                        </Link>
+                    <form onSubmit={handleLogin} className="mt-4 " style={{width:'60%'}}>
+                        <div className="mb-3">
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            value={email}
+                            onChange={onChange}
+                            className="form-control"
+                            placeholder="Email"
+                            required
+                        />
+                        <div className="text-sm mt-3 mb-3 float-right">
+                            <Link
+                            to={'/forgot-password'}
+                            className="font-semibold text-indigo-600 hover:text-indigo-500 text-decoration-none"
+                            >
+                            Forgot password?
+                            </Link>
+                        </div>
+                        </div>
+                        <div className="mb-3">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            value={password}
+                            onChange={onChange}
+                            className="form-control"
+                            placeholder="Password"
+                            required
+                        />
+                        </div>
+                        <button type="submit" className="btn btn-secondary" style={buttonStyle}>Log In</button>
+                        {error && <p className="text-danger mt-2">{error}</p>}
+                    </form>
+                    <p className="mt-3 text-center text-sm text-gray-500">Don't have an account? <Link to={'/register'} className="font-semibold leading-6 ml-2 text-indigo-600 hover:text-indigo-500 text-decoration-none">Sign up</Link></p>
+                    <p className="mt-1">Are you Superuser? <Link to={"/admin-login"} className="font-semibold leading-6 ml-2 text-indigo-600 hover:text-indigo-500 text-decoration-none">Login Here</Link></p>
+                    <div className="mt-4">
+                        <p>Get the app.</p>
+                        <img src={appStores} alt="Get the app" className="img-fluid" style={{ width: '300px' }} />
                     </div>
-                    </div>
-                    <div className="mb-3">
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        value={password}
-                        onChange={onChange}
-                        className="form-control"
-                        placeholder="Password"
-                        required
-                    />
-                    </div>
-                    <button type="submit" className="btn btn-secondary" style={buttonStyle}>Log In</button>
-                    {error && <p className="text-danger mt-2">{error}</p>}
-                </form>
-                <p className="mt-3 text-center text-sm text-gray-500">Don't have an account? <Link to={'/register'} className="font-semibold leading-6 ml-2 text-indigo-600 hover:text-indigo-500 text-decoration-none">Sign up</Link></p>
-                <p className="mt-1">Are you Superuser? <Link to={"/admin-login"} className="font-semibold leading-6 ml-2 text-indigo-600 hover:text-indigo-500 text-decoration-none">Login Here</Link></p>
-                <div className="mt-4">
-                    <p>Get the app.</p>
-                    <img src={appStores} alt="Get the app" className="img-fluid" style={{ width: '300px' }} />
                 </div>
             </div>
+                    
+            
         </div>
-                   
-        )}
-      </div>
-    </div>
+        </div>
   );
 }
 

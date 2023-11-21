@@ -16,8 +16,8 @@ SECRET_KEY = config('DJANGO_SECRET_KEY')
 # DEBUG = False
 DEBUG = True
 
-ALLOWED_HOSTS = ['13.233.141.37','instaconnect.online','www.instaconnect.online']
-# ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['13.233.141.37','instaconnect.online','www.instaconnect.online']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -186,10 +186,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / "static"
+# STATIC_ROOT = BASE_DIR / "static"
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / "media"
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = BASE_DIR / "media"
+
+MEDIA_URL ='images/'
+MEDIA_ROOT='static/images/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

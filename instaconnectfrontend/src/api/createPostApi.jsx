@@ -9,14 +9,17 @@ const createPostApi = async (content, postImage) => {
         formData.append('body', content);
         formData.append('img', postImage);
 
-        const response = await axios.post(`${BASE_URL}/api/post/create-post/`, formData, {
+        const response = await axios.post(`${BASE_URL}/post/create-post/`, formData, {
             headers: {
               Accept: 'application/json',
               Authorization: `Bearer ${accessToken}`,
             },
           });
 
+          console.log('Response data from createPostApi:', response.data);
+
           if (response.status === 201) {
+            console.log('new post created')
             return response.data;
           } else {
             console.log(response.error);

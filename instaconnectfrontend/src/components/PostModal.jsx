@@ -34,15 +34,18 @@ const PostModal = ({ isVisible, onClose, postID, initialCaption, initialImage ,u
       try {
         onClose();
         await UpdatePostApi(postID, caption, postImage);
+      
+        // Call the updateCaption function with the new caption
+        console.log('updateCaption', caption);
+        updateCaption(postID, caption);
+        setCaption('');
+      
         toast.success('Post updated successfully', {
           position: 'top-center',
         });
-  
-        // Call the updateCaption function with the new caption
-        console.log('updateCaption',caption)
-        updateCaption(caption);
-        setCaption('');
       } catch (error) {
+        console.error('Error updating post:', error);
+      
         toast.error('Failure, Post not updated!', {
           position: 'top-center',
         });
@@ -52,7 +55,7 @@ const PostModal = ({ isVisible, onClose, postID, initialCaption, initialImage ,u
         onClose();
         const newPostData = await createPostApi(caption, postImage);
         console.log('newpostdata after creation',newPostData)
-        updatePostList(newPostData)
+        updatePostList()
         toast.success('Post Created successfully', {
           position: 'top-center',
         });

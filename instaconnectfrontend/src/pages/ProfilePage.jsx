@@ -15,7 +15,6 @@ import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 import checkfollowstatusapi from '../api/checkfollowstatusapi';
 import createChatRoomApi from '../api/createChatRoomApi';
-import PostModal from '../components/PostModal';
 import Networkmodal from '../components/Networkmodal';
 
 const UserPage = styled.div`

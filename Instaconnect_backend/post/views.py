@@ -26,7 +26,7 @@ class PostHomeView(APIView):
             user =request.user
             followers=Follow.objects.filter(follower=user)
             posts_by_followers=[]
-            post_by_user =Posts.objects.filter(author=user,is_deleted=False).order_by('-created_at')
+            post_by_user =Posts.objects.filter(author=user,is_deleted=False,is_blocked=False).order_by('-created_at')
             for follower in followers:
                 posts=Posts.objects.filter(author=follower.following,is_deleted=False,is_blocked=False).order_by('-created_at')
                 posts_by_followers.extend(posts)
@@ -253,7 +253,7 @@ class ProfileView(APIView):
     def get(self,request,email,*args,**kwargs):
         try:
             profile = UserAccount.objects.get(email=email)
-            profile_posts = Posts.objects.filter(author=profile,is_deleted=False).order_by('-updated_at')
+            profile_posts = Posts.objects.filter(author=profile,is_deleted=False,is_blocked=False).order_by('-updated_at')
             profile_serializer=UserSerializer(profile)
             post_serializer = PostSerializer(profile_posts,many=True)
 

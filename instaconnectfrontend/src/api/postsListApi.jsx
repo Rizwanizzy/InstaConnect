@@ -4,7 +4,7 @@ import { BASE_URL } from "../utils/constants";
 const postsListApi = async () => {
     try {
         const accessToken = localStorage.getItem('access_token')
-        const response = await axios.get(`${BASE_URL}/api/postslist/`,{
+        const response = await axios.get(`${BASE_URL}/postslist/`,{
             headers:{
                 Accept:'application/json',
                 'Content-Type':'application/json',

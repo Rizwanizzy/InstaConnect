@@ -4,7 +4,7 @@ import { BASE_URL } from '../utils/constants'
 const checkfollowstatusapi = async (email) => {
   try {
     const accessToken = localStorage.getItem('access_token')
-    const response = await axios.get(`${BASE_URL}/api/post/check-follow-status/${email}/`,{
+    const response = await axios.get(`${BASE_URL}/post/check-follow-status/${email}/`,{
         headers: {
             Accept:'application/json',
             Authorization:`Bearer ${accessToken}`,

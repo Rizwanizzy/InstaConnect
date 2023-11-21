@@ -211,10 +211,10 @@ const PostDetailModal = ({ isVisible, onClose, postID }) => {
                           />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm pt-3 font-medium text-gray-900 truncate">
+                          <p className="text-sm pt-3 font-medium text-gray-900">
                             {cmnt.user.username}
                           </p>
-                          <p className="text-sm text-gray-500 truncate dark:text-gray-400">
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
                             {cmnt.body}
                           </p>
                         </div>

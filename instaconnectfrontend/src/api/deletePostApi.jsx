@@ -4,7 +4,7 @@ import { BASE_URL } from "../utils/constants";
 const deletePostApi =async(postId,fetchData) =>{
     try{
         const accessToken = localStorage.getItem('access_token')
-        const response = await axios.delete(`${BASE_URL}/api/post/delete-post/${postId}`,{
+        const response = await axios.delete(`${BASE_URL}/post/delete-post/${postId}`,{
             headers:{
                 Accept:'application/json',
                 Authorization:`Bearer ${accessToken}`,
